@@ -1,27 +1,44 @@
 <template>
-  <main>
-    <div class="panel">
-      <button @click="addWidget('CombineWidget')">Add CombineWidget</button>
-      <button @click="saveTemplate()">Export</button>  
-      <button @click="loadTemplate(1)">load</button>
-      <button @click="updateTemplate(1)">update</button>
-      <input type="file" @change="handleFileUpload">
-      <button @click="publishHtml()">Publish</button>
-    </div>
-    <div class="canvas">
-      <div v-for="(item, index) in widgets" :key="index" class="widget">
-        <component
-          :is="item.type + 'Widget'"
-          :key="index"
-          v-bind="item.props"
-          @update:content="(eventData) => handleWidgetUpdate(eventData, index)"
-        ></component>
-        <button @click="deleteWidget(index)">remove</button>
-        <button @click="moveUp(index)">Move Up</button>
-        <button @click="moveDown(index)">Move Down</button>
-      </div>
-    </div>
-  </main>
+  <div class="common-layout">
+    <el-container>
+      <el-header>Header</el-header>
+      <el-main>
+        <el-row>
+          <el-col :span="2"><div class="grid-content ep-bg-purple-dark" /></el-col>
+          <el-col :span="6" align="middle">
+            <el-affix :offset="120">
+            <el-button type="primary">Offset top 120px</el-button>
+              <div class="panel">
+                <button @click="addWidget('CombineWidget')">Add CombineWidget</button>
+                <button @click="saveTemplate()">Export</button>  
+                <button @click="loadTemplate(1)">load</button>
+                <button @click="updateTemplate(1)">update</button>
+                <input type="file" @change="handleFileUpload">
+                <button @click="publishHtml()">Publish</button>
+              </div>
+            </el-affix>
+          </el-col>
+          <el-col :span="8">
+            <div class="canvas">
+              <div v-for="(item, index) in widgets" :key="index" class="widget">
+                <component
+                  :is="item.type + 'Widget'"
+                  :key="index"
+                  v-bind="item.props"
+                  @update:content="(eventData) => handleWidgetUpdate(eventData, index)"
+                ></component>
+                <button @click="removeWidget(index)">remove</button>
+                <button @click="moveUp(index)">Move Up</button>
+                <button @click="moveDown(index)">Move Down</button>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="8"></el-col>
+        </el-row>
+        <el-backtop :right="400" :bottom="100" />
+      </el-main>
+    </el-container>
+  </div>
 </template>
 
 <script>
@@ -229,18 +246,13 @@ export default {
 </script>
 
 <style scoped>
-  .panel {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-  }
+
   .canvas {
     max-width: 375px; /* 或者使用 100vw 来确保宽度在视口宽度内 */
-    height: 667px; /* 模拟常见的H5页面高度 */
-    margin: auto;
+    min-height: 667px; /* 模拟常见的H5页面高度 */
     border: 1px solid #ccc;
-    position: relative;
     overflow: hidden;
+    position: relative;
   }
   
   .widget {

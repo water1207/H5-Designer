@@ -3,7 +3,15 @@
       <h2> {{ myTitle }} </h2>
       <p> {{ myContent }} </p>
       <img :src="mySrc" :alt="myAlt" style="max-width: 100%;">
-      <el-button @click="openDialog">编辑</el-button>
+      <el-button @click="openDialog" align="center">编辑</el-button>
+      <div style="display: flex; justify-content: center;">
+        <audio controls>
+          <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+          <!--- 其他格式的兼容设置 -->
+          您的浏览器不支持audio元素。 
+        </audio>
+      </div>
+
   
       <el-dialog
         title="编辑内容"
@@ -109,4 +117,8 @@
     },
   };
   </script>
+  
+  <style>
+
+  </style>
   
