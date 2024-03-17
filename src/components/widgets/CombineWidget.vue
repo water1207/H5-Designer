@@ -1,37 +1,52 @@
 <template>
-    <div>
+    <div class="combine"
+    @mouseenter="buttonVisiable = true" 
+    @mouseleave="buttonVisiable = false">
       <h2> {{ myTitle }} </h2>
+      <div class="line">
+          <div />
+      </div>
       <p> {{ myContent }} </p>
       <img :src="mySrc" :alt="myAlt" style="max-width: 100%;">
-      <el-button @click="openDialog" align="center">编辑</el-button>
-      <div style="display: flex; justify-content: center;">
-        <audio controls>
-          <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-          <!--- 其他格式的兼容设置 -->
-          您的浏览器不支持audio元素。 
-        </audio>
-      </div>
-
+      <el-button @click="openDialog" v-if="buttonVisiable" class="editButton">编辑</el-button>
   
       <el-dialog
         title="编辑内容"
+        width="40%"
         v-model="dialogVisible"
         @close="reset">
-        <el-form>
+        <el-form
+        ref="form"
+        style="max-width: 600px"
+        label-position="left"
+        label-width="auto"
+        >
           <el-form-item label="标题">
-            <el-input v-model="myTitle"></el-input>
-            <el-switch v-model="mySwitchStates[0]" active-text="添加备注"></el-switch>
-            <el-input v-if="mySwitchStates[0]" v-model="myNotes[0]" placeholder="请输入标题备注"></el-input>
+            <el-col :span="6" >
+              <el-switch v-model="mySwitchStates[0]" active-text="动态标记"></el-switch>
+            </el-col>
+            <el-col :span="11" style="margin: 0 0.1rem">
+              <el-input v-if="mySwitchStates[0]" v-model="myNotes[0]" placeholder="请输入标题备注"></el-input>
+            </el-col> 
+            <el-input v-model="myTitle" style="top: 10px;"></el-input>
           </el-form-item>
           <el-form-item label="内容">
-            <el-input type="textarea" v-model="myContent"></el-input>
-            <el-switch v-model="mySwitchStates[1]" active-text="添加备注"></el-switch>
-            <el-input v-if="mySwitchStates[1]" v-model="myNotes[1]" placeholder="请输入内容备注"></el-input>
+            <el-col :span="6" >
+              <el-switch v-model="mySwitchStates[1]" active-text="动态标记"></el-switch>
+            </el-col>
+            <el-col :span="11" style="margin: 0 0.1rem">
+              <el-input v-if="mySwitchStates[1]" v-model="myNotes[1]" placeholder="请输入内容备注"></el-input>
+            </el-col> 
+            <el-input type="textarea" v-model="myContent" style="top: 10px;"></el-input>
           </el-form-item>
           <el-form-item label="图片URL">
-            <el-input v-model="mySrc"></el-input>
-            <el-switch v-model="mySwitchStates[2]" active-text="添加备注"></el-switch>
-            <el-input v-if="mySwitchStates[2]" v-model="myNotes[2]" placeholder="请输入图片URL备注"></el-input>
+            <el-col :span="6" >
+              <el-switch v-model="mySwitchStates[2]" active-text="动态标记"></el-switch>
+            </el-col>
+            <el-col :span="11" style="margin: 0 0.1rem">
+              <el-input v-if="mySwitchStates[2]" v-model="myNotes[2]" placeholder="请输入图片URL备注"></el-input>
+            </el-col> 
+            <el-input v-model="mySrc" style="top:10px;"></el-input>
           </el-form-item>
         </el-form>
         <template v-slot:footer>
@@ -63,6 +78,7 @@
     data() {
       return {
         dialogVisible: false,
+        buttonVisiable: false,
         myTitle: this.title,
         myContent: this.content,
         mySrc: this.src,
@@ -118,7 +134,7 @@
   };
   </script>
   
-  <style>
+  <style scoped>
 
   </style>
   
