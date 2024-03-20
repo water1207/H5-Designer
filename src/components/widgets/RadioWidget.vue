@@ -1,5 +1,5 @@
 <template>
-	<div class="radio">
+	<div class="Radio">
 		<h4>
 			{{ _title }}
 		</h4>

@@ -1,5 +1,5 @@
 <template>
-    <div class="product">
+    <div class="Product">
         <p>名称</p>
         <p>{{ _name }}</p>
         <div class="line-container"></div>

@@ -39,19 +39,15 @@
           <button @click="addWidget('SubTitleWidget')">Add TitleWithLine</button>
           <button @click="addWidget('TitleWidget')">Add TitleWidget</button>
           <button @click="addWidget('ProductWidget')">Add ProductWidget</button>
-          <button @click="saveTemplate()">模版保存</button>  
-          <button @click="loadTemplate(1)">load</button>
-          <button @click="updateTemplate(1)">update</button>
-          <input type="file" @change="handleFileUpload">
-          <button @click="publishHtml()">Publish</button>
         </div>
       </el-affix>
     </el-col>
     <el-col :span="8">
       <div class="canvas">
         <div v-for="(item, index) in widgets" :key="index" class="widget"      
-          @mouseenter="cancelDelay(); hoverIndex = index" 
-          @mouseleave="delayHide(index)">
+          @mouseenter="cancelDelay();hoverIndex = index" 
+          @mouseleave="delayHide(index)"
+          >
           <component
             :is="item.type + 'Widget'"
             :key="index"
@@ -59,14 +55,24 @@
             @update:content="(eventData) => handleWidgetUpdate(eventData, index)"
           ></component>
           <div class="toolBox" v-show="hoverIndex === index">
-            <el-button size="small" type="primary" icon="ArrowUpBold" @click="moveUp(index)" circle plain style="margin-left:12px; margin-bottom: 5px;"/>
+            <el-button size="small" type="primary" icon="ArrowUpBold" @click="moveUp(index)" circle plain style="margin-bottom: 5px;"/>
             <el-button size="small" type="primary" icon="ArrowDownBold" @click="moveDown(index)" circle plain style="margin-bottom: 5px;"/> 
             <el-button size="small" type="danger" icon="Delete" @click="removeWidget(index)" circle plain/> 
           </div>
         </div>
       </div>
     </el-col>
-    <el-col :span="8"></el-col>
+    <el-col :span="8">
+      <el-affix :offset="120">
+        <el-button type="primary">Offset top 120px</el-button><br>
+        <input type="text" v-model="tName" placeholder="模版名称"><br>
+        <button @click="saveTemplate()">模版保存</button><br>  
+        <input type="text" v-model="tId" placeholder="模版ID"><br>
+        <button @click="loadTemplate()">模版加载</button><br>
+        <button @click="updateTemplate(1)">模版更新</button><br>
+        <input type="file" @change="handleFileUpload">
+      </el-affix>
+    </el-col>
   </el-row>
   <el-backtop :right="400" :bottom="100" />
 </template>
@@ -77,7 +83,6 @@ import RadioWidget from '../components/widgets/RadioWidget.vue'
 import SubTitleWidget from '../components/widgets/SubTitleWidget.vue'
 import TitleWidget from '@/components/widgets/TitleWidget.vue'
 import ProductWidget from '@/components/widgets/ProductWidget.vue'
-import Demo from '@/components/widgets/Demo.vue'
 import { ElNotification } from 'element-plus'
 import axios from 'axios'
 import * as XLSX from 'xlsx'
@@ -89,8 +94,7 @@ export default {
     SubTitleWidget,
     TitleWidget,
     ProductWidget,
-    Demo
-},
+  },
   data() {
     return {
       widgets: [],
@@ -99,6 +103,8 @@ export default {
       pages: [],
       hoverIndex: null, // 用于跟踪鼠标悬浮的组件索引
       hideTimeoutId: null,
+      tName: "",
+      tId: "",
     }
   },
   methods: {
@@ -182,14 +188,14 @@ export default {
       this.notes = dynamicsNotes;
 
       const templateData = { 
-        name: "test1",
+        name: this.tName,
         data: JSON.stringify({widgets, dynamics, dynamicsNotes}),
       };
       // 根据需要返回或使用 dynamics 和 dynamicsNotes
       axios.post('http://127.0.0.1:8088/api/templates/save', templateData).then(response => { 
         ElNotification({
           title: 'Success',
-          message: '模板保存成功',
+          message: '模板保存成功' + response.data.id,
           type: 'success',
           duration: 2000,
         })
@@ -206,9 +212,9 @@ export default {
       });
     },
     // 更新模版
-    updateTemplate(templateId) {
+    updateTemplate() {
       const templateData = { 
-        id: templateId,
+        id: this.tId,
         data: JSON.stringify({widgets: this.widgets, dynamics: this.dynamics, dynamicsNotes: this.dynamicsNotes}),
       };
       axios.post('http://127.0.0.1:8088/api/templates/update', templateData).then(response => {
@@ -230,8 +236,8 @@ export default {
       });
     },
     // 加载模版
-    loadTemplate(templateId) {
-      axios.get(`http://127.0.0.1:8088/api/templates/get?id=${templateId}`, ).then(response => {
+    loadTemplate() {
+      axios.get(`http://127.0.0.1:8088/api/templates/get?id=${this.tId}`, ).then(response => {
         const templateData = JSON.parse(response.data.data);
         this.applyTemplate(templateData);
         ElNotification({
@@ -279,11 +285,138 @@ export default {
       // this.exportHtmlPages(pages);
     },
     generateHtml() {
-      let html = '<html><head><style>.page { margin: 20px; padding: 20px; border: 1px solid #ccc; } h1, p { margin: 0; padding: 10px 0; }</style></head><body>';
-      html += `<div class="app">`;
+
+      let css = `
+<style>
+.title {
+	display: flex;
+	justify-content: center;
+	margin: 0 0;
+
+  h2 {
+    line-height: 2;
+    margin: 0 0;
+  }
+}
+
+/* Sub Title */
+.sub-title {
+  text-align: center;
+  height: auto;
+
+  .line-container {
+    display: flex;
+    justify-content: center; /* This will center the child elements */
+    margin: 0px 0;
+    position: relative;
+    width: 100%;
+    height: 1px; /* Adjust the height to set the thickness of the line */
+    background-color: #ccc; /* Default line color */
+  }
+
+  .colored-bold-section {
+    position: absolute;
+    width: 25%; /* Adjust the width to set the length of the colored section */
+    height: 2px; /* Adjust to make this section bolder than the rest of the line */
+    background-color: #3498db; /* Adjust the color to your preference */
+  }
+  
+  h3 {
+    line-height: 1.7;
+    margin: 0 0;
+  }
+
+  p {
+    line-height: 1;
+    margin: 0 0;
+    padding-bottom: 10px;
+    padding-top: 10px
+  }
+}
+
+
+/* Product */
+.product {
+  margin: 0 0;
+  padding:0 5%;
+
+  p {
+    line-height: 2;
+    margin: 0 0;
+  }
+
+  .line-container {
+    display: flex;
+    justify-content: center;
+    margin: 1% 0;
+    position: relative;
+    width: 100%;
+    height: 1px;
+    background-color: #ccc;
+  }
+}
+
+.radio h4 {
+	line-height: 3;
+	margin: 0 0;
+}
+
+.combine {
+  position: relative; /* 确保卡片是相对定位的 */
+  overflow: hidden; /* 防止按钮超出卡片边界 */
+
+  h2 {
+    line-height: 1.7;
+    margin: 0 0;
+  }
+  
+  p {
+    line-height: 1;
+    margin: 0 0;
+    padding-bottom: 10px;
+    padding-top: 10px
+  }
+  
+  .line {
+    width: 100%;
+    border-top: 1px solid var(--el-border-color);
+  }
+
+  .editButton{
+    position: absolute;
+    top: 5px; /* 根据需要调整 */
+    right: 5px; /* 根据需要调整 */
+    z-index: 10; /* 确保按钮在卡片内容之上 */
+  }
+}
+</style>
+      `
+      let content = "";
+
+      content += `<div class="app" style="display: flex; justify-content: center;">`;
+
       this.widgets.forEach(item => {
         if(item.type == "Combine") {
-          html += `<div class${item.type}>`
+          content += `<div class=${item.type}>`
+          Object.keys(item.props).forEach(key => {
+            let value = "";
+            if(key == "switchStates" || key == "notes") {
+              return;
+            }
+            value = item.props[key];
+            if(key == "title") {
+              content += `<h2>${value}</h2>`;
+              content +=  `<div class="line"><div /></div>`;
+            }
+            if(key == "content")
+              content += `<p>${value}</p>`;
+            if(key == "src")
+              content += `<img src="${value}" alt="${value}" style="max-width: 100%;">`;
+          })
+          content += `</div>`;
+        }
+        if(item.type == "Title") {
+          content += `<div class=${item.type}>`
           Object.keys(item.props).forEach(key => {
             let value = "";
             if(key == "switchStates" || key == "notes") {
@@ -291,20 +424,55 @@ export default {
             }
             value = item.props[key];
             if(key == "title")
-              html += `<h2>${value}</h2>`;
-            if(key == "content")
-              html += `<p>${value}</p>`;
-            if(key == "src")
-              html += `<img src="${value}" alt="${value}" style="max-width: 100%;">`;
+              content += `<h2>${value}</h2>`;
           })
+          content += `</div>`;
         }
-
+        if(item.type == "SubTitle") {
+          content += `<div class=${item.type}>`
+          Object.keys(item.props).forEach(key => {
+            let value = "";
+            if(key == "switchStates" || key == "notes") {
+              return;
+            }
+            value = item.props[key];
+            if(key == "title") {
+              content += `<h3>${value}</h3>`;
+              content += `<div class="line-container"> <div class="colored-bold-section"></div></div>`;
+            }
+          })
+          content += `</div>`;
+        }
       });
+
+      axios.post('http://127.0.0.1:8088/api/pages/publish', {content: content}).then(response => {
+        ElNotification({
+          title: 'Success',
+          message: '单页发布成功',
+          type: 'success',
+          duration: 2000,
+        })
+        console.log('单页发布成功', response);
+      }).catch(error => {
+        ElNotification({
+          title: 'Error',
+          message: '单页发布失败',
+          type: 'error',
+          duration: 2000,
+        })
+        console.error('单页发布失败', error);
+      });
+
+      let html = '<!DOCTYPE html><html><head><title>Exported Page</title><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1">' 
+          + css + '</head><body><div class="canvas">' 
+          + content + '</div></body></html>';
+      
+      // this.downloadHtml(html, "exported-page.html");
     },
     generateHtmls(row) {
       let i = 0;
       let j = 1;
-      let html = '<html><head><style>.page { margin: 20px; padding: 20px; border: 1px solid #ccc; } h1, p { margin: 0; padding: 10px 0; }</style></head><body>';
+      let html = '<html><head><style>.page { margin: 20px; padding: 20px; border: 1px solid #ccc; } h1, p { margin: 0; padding: 10px 0; }</></head><body>';
       html += `<div class="app">`;
       console.log(this.widgets);
       console.log(this.dynamics);
@@ -434,8 +602,11 @@ export default {
     z-index: 10;  
     display: flex; 
     flex-direction: column;
-    justify-content:flex-start;
+    justify-content:flex-start; 
     flex-wrap: wrap; 
-    width: 50px;  
+    width: 50px;
+    .el-button + .el-button {
+      margin-left: 0px;
+    }
   }
 </style>

@@ -101,6 +101,36 @@
   }
 }
 
+.app {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 600px;
+}
 
+.show {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 400px;
+}
 
+.canvas {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.widget {
+  margin: 5px;
+  padding: 5px;
+  position: relative; 
+  border: 1px solid #ccc;
+  width: fit-content;
+}
 

@@ -1,15 +1,14 @@
 <template>
-    <div class="combine"
+    <div class="Combine"
     @mouseenter="buttonVisiable = true" 
     @mouseleave="buttonVisiable = false">
       <h2> {{ myTitle }} </h2>
       <div class="line">
-          <div />
       </div>
       <p> {{ myContent }} </p>
       <img :src="mySrc" :alt="myAlt" style="max-width: 100%;">
-      <el-button @click="openDialog" v-if="buttonVisiable" class="editButton">编辑</el-button>
-  
+      <el-button @click="openDialog" v-if="buttonVisiable&&editable" class="editButton">编辑</el-button>
+    </div>
       <el-dialog
         title="编辑内容"
         width="40%"
@@ -56,7 +55,7 @@
           </span>
         </template>
       </el-dialog>
-    </div>
+
   </template>
   
   <script>
@@ -66,6 +65,10 @@
       content: String,
       src: String,
       alt: String,
+      editable: {
+        type: Boolean,
+        default: true,
+      },
       switchStates: {
         type: Array,
         default: () => [false, false, false],
@@ -77,6 +80,7 @@
     },
     data() {
       return {
+        editable: this.editable,
         dialogVisible: false,
         buttonVisiable: false,
         myTitle: this.title,
@@ -134,7 +138,4 @@
   };
   </script>
   
-  <style scoped>
-
-  </style>
   

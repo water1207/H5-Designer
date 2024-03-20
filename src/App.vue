@@ -3,8 +3,9 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-<div class="common-layout">
-  <el-container>
+  <main>
+<!-- <div class="common-layout"> -->
+  <!-- <el-container> -->
     <!-- <el-header> -->
       <!-- <el-menu
         :default-active="activeIndex"
@@ -33,11 +34,10 @@ import { RouterLink, RouterView } from 'vue-router'
       </el-menu> -->
     <!-- </el-header> -->
 
-    <el-main>
       <RouterView />
-    </el-main>
-  </el-container>
-</div>
+  </main>
+  <!-- </el-container> -->
+<!-- </div> -->
 
 </template>
 

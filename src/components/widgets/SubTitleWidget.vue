@@ -1,5 +1,5 @@
 <template>
-  <div class="sub-title">
+  <div class="SubTitle">
       <h3> {{ _title }} </h3>
       <div class="line-container">
         <div class="colored-bold-section"></div>
