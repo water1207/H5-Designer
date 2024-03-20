@@ -70,7 +70,9 @@
         <input type="text" v-model="tId" placeholder="模版ID"><br>
         <button @click="loadTemplate()">模版加载</button><br>
         <button @click="updateTemplate(1)">模版更新</button><br>
-        <input type="file" @change="handleFileUpload">
+        <input type="file" @change="handleFileUpload" />
+        <button @click="submitFile">上传 Excel</button>
+        <!-- <input type="file" @change="handleFileUpload"> -->
       </el-affix>
     </el-col>
   </el-row>
@@ -105,6 +107,7 @@ export default {
       hideTimeoutId: null,
       tName: "",
       tId: "",
+      file: null,
     }
   },
   methods: {
@@ -174,7 +177,7 @@ export default {
       // 使用 map 遍历 widgets，然后对每个 widget 的 switchStates 使用 reduce 累积符合条件的备注
       const dynamics = this.widgets.flatMap(item => item.props.switchStates);
       const dynamicsNotes = this.widgets.reduce((notesAccumulator, item) => {
-      const notesForWidget = item.props.notes.filter((note, index) => item.props.switchStates[index]);
+        const notesForWidget = item.props.notes.filter((note, index) => item.props.switchStates[index]);
         return notesAccumulator.concat(notesForWidget);
       }, []);
 
@@ -537,6 +540,28 @@ export default {
         console.error('页面发布失败', error);
       });
     },
+
+    handleFileUpload(event) {
+      this.file = event.target.files[0];
+    },
+    submitFile() {
+      const formData = new FormData();
+      formData.append('file', this.file);
+
+      axios.post('http://127.0.0.1:8088/api/page/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(response => {
+        this.widgets = response.data;
+        console.log('上传successfully', response);
+      })
+      .catch(error => {
+        console.error('Error uploading file', error);
+      });
+    },
+
     // 移除组件
     removeWidget(index) {
       this.widgets.splice(index, 1);

@@ -1,70 +1,60 @@
+// 这是我的画布， 通过v-for循环遍历widgets数组，然后根据item.type的值来动态渲染对应的组件，这样就实现了画布的动态渲染。
+// 现在有新的需求，我可以将widgets数组作为模版，在此基础上批量渲染多个界面，即widget数组中每个对象都有一个switchStates属性用于控制组件的内容是否是动态数据,如果switchStates为true则显示动态数据,否则为props本身的数据。
+// 动态数据的来源是excel表格，excel表格中的一行数据就代表一个页面的动态数据，动态数据按照switchStates替换props的数据,如第一个对象:type为combine,switchStates的第1个值为true,并且第三个组件type:Product,switchStates的第0个值为true，所以Combine组件的content属性和Product组件的name属性都是动态值，
+// 因此第一个页面中Combine的content属性的值是第一行excel第一列的值，Product的name属性的值是excel第二列的值。
+// 由于每个页面在数据库中保存的是widgets数组的字符串，所以我希望将excel表格数据放到后端处理，后端根据excel表格和switchStates的逻辑来为每个页面的都生成相应的widgets数组并存储数据库，然后前端通过接口获取数据，直接请求页面的widgets数组即可显示页面。
 <template>
-    <div aria-label="A complete example of page header">
-      <el-page-header @back="onBack">
-        <template #breadcrumb>
-          <el-breadcrumb separator="/">
-            <el-breadcrumb-item :to="{ path: './page-header.html' }">
-              homepage
-            </el-breadcrumb-item>
-            <el-breadcrumb-item
-              ><a href="./page-header.html">route 1</a></el-breadcrumb-item
-            >
-            <el-breadcrumb-item>route 2</el-breadcrumb-item>
-          </el-breadcrumb>
-        </template>
-        <template #content>
-          <div class="flex items-center">
-            <el-avatar
-              class="mr-3"
-              :size="32"
-              src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-            />
-            <span class="text-large font-600 mr-3"> Title </span>
-            <span
-              class="text-sm mr-2"
-              style="color: var(--el-text-color-regular)"
-            >
-              Sub title
-            </span>
-            <el-tag>Default</el-tag>
-          </div>
-        </template>
-        <template #extra>
-          <div class="flex items-center">
-            <el-button>Print</el-button>
-            <el-button type="primary" class="ml-2">Edit</el-button>
-          </div>
-        </template>
-  
-        <el-descriptions :column="3" size="small" class="mt-4">
-          <el-descriptions-item label="Username"
-            >kooriookami</el-descriptions-item
-          >
-          <el-descriptions-item label="Telephone"
-            >18100000000</el-descriptions-item
-          >
-          <el-descriptions-item label="Place">Suzhou</el-descriptions-item>
-          <el-descriptions-item label="Remarks">
-            <el-tag size="small">School</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="Address"
-            >No.1188, Wuzhong Avenue, Wuzhong District, Suzhou, Jiangsu Province
-          </el-descriptions-item>
-        </el-descriptions>
-        <p class="mt-4 text-sm">
-          Element Plus team uses <b>weekly</b> release strategy under normal
-          circumstance, but critical bug fixes would require hotfix so the actual
-          release number <b>could be</b> more than 1 per week.
-        </p>
-      </el-page-header>
+  <div class="canvas">
+    <div v-for="(item, index) in widgets" :key="index" class="widget">
+      <component
+        :is="item.type + 'Widget'"
+        :key="index"
+        v-bind="item.props"
+      ></component>
     </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { ElNotification as notify } from 'element-plus'
-  
-  const onBack = () => {
-    notify('Back')
+  </div>
+</template>
+
+<script>
+export default {
+  components: {
+    CombineWidget,
+    RadioWidget,
+    SubTitleWidget,
+    TitleWidget,
+    ProductWidget,
+  },
+  data() {
+    return {
+      widgets: [
+        {
+          type: 'Combine',
+          props: {
+            title: '默认标题',
+            content: '默认描述',
+            src:  'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+            alt:  '默认图片' ,
+            switchStates: [false, true, false],
+            notes: ['', '', ''],
+          },
+        },{
+            type: 'SubTitle',
+            props: {
+              title: '默认标题',
+              switchStates: [false],
+              notes: [''],
+            },
+        },{
+            type: 'Product',
+            props: {
+              name: '默认名称',
+              desc: '默认描述',
+              switchStates: [true, false],
+              notes: ['', ''],
+            },
+        },
+      ],
+    },
   }
-  </script>
-  
+};
+</script>

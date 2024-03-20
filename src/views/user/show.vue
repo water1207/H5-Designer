@@ -7,7 +7,6 @@
           :key="index"
           :editable="false"
           v-bind="item.props"
-          @update:content="(eventData) => handleWidgetUpdate(eventData, index)"
         ></component>
       </div>
     </div>
