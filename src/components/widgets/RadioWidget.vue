@@ -14,7 +14,7 @@
 <script>
 export default {
 	props: {
-		title: {
+	title: {
 			title: String,
 			src: String,
       switchStates: {

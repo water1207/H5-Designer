@@ -23,6 +23,11 @@ const router = createRouter({
       name: 'show',
       component: show,
       props: true // 允许将路由参数作为props传递给组件
+    },
+    {
+      path: '/demo',
+      name: 'demo',
+      component: () => import('../views/ExcelDownloader.vue'),
     }
   ]
 })

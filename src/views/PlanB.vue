@@ -22,17 +22,17 @@
       </template>
       <template #extra>
         <div class="flex items-center">
-          <el-button>保存</el-button>
-          <el-button type="primary" class="ml-2">Edit</el-button>
+          <a-button>保存</a-button>
+          <a-button type="primary" class="ml-2">Edit</a-button>
         </div>
       </template>
     </el-page-header>
     </div>
-    <el-row>
-      <el-col :span="2"><div class="grid-content ep-bg-purple-dark" /></el-col>
-      <el-col :span="6" align="middle">
+    <a-row>
+      <a-col :span="2"><div class="grid-content ep-bg-purple-dark" /></a-col>
+      <a-col :span="6" align="middle">
         <el-affix :offset="120">
-        <el-button type="primary">Offset top 120px</el-button>
+        <a-button type="primary">Offset top 120px</a-button>
           <div class="panel">
             <button @click="addWidget('CombineWidget')">Add CombineWidget</button>
             <button @click="addWidget('RadioWidget')">Add RadioWidget</button>
@@ -47,8 +47,8 @@
             <button @click="generateHtml()">导出单页</button>
           </div>
         </el-affix>
-      </el-col>
-      <el-col :span="8">
+      </a-col>
+      <a-col :span="8">
         <div class="canvas">
           <div v-for="(item, index) in widgets" :key="index" class="widget"      
             @mouseenter="cancelDelay();hoverIndex = index" 
@@ -61,15 +61,15 @@
               @update:content="(eventData) => handleWidgetUpdate(eventData, index)"
             ></component>
             <div class="toolBox" v-show="hoverIndex === index">
-              <el-button size="small" type="primary" icon="ArrowUpBold" @click="moveUp(index)" circle plain style="margin-bottom: 5px;"/>
-              <el-button size="small" type="primary" icon="ArrowDownBold" @click="moveDown(index)" circle plain style="margin-bottom: 5px;"/> 
-              <el-button size="small" type="danger" icon="Delete" @click="removeWidget(index)" circle plain/> 
+              <a-button size="small" type="primary" icon="ArrowUpBold" @click="moveUp(index)" circle plain style="margin-bottom: 5px;"/>
+              <a-button size="small" type="primary" icon="ArrowDownBold" @click="moveDown(index)" circle plain style="margin-bottom: 5px;"/> 
+              <a-button size="small" type="danger" icon="Delete" @click="removeWidget(index)" circle plain/> 
             </div>
           </div>
         </div>
-      </el-col>
-      <el-col :span="8"></el-col>
-    </el-row>
+      </a-col>
+      <a-col :span="8"></a-col>
+    </a-row>
     <el-backtop :right="400" :bottom="100" />
   </template>
   
@@ -601,7 +601,7 @@
       justify-content:flex-start; 
       flex-wrap: wrap; 
       width: 50px;
-      .el-button + .el-button {
+      .a-button + .a-button {
         margin-left: 0px;
       }
     }

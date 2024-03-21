@@ -20,7 +20,6 @@
   import TitleWidget from '@/components/widgets/TitleWidget.vue';
   import ProductWidget from '@/components/widgets/ProductWidget.vue';
   import axios from 'axios'
-  import { ElNotification } from 'element-plus'
 
   export default {
     components: {
