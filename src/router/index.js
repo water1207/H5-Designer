@@ -28,6 +28,11 @@ const router = createRouter({
       path: '/demo',
       name: 'demo',
       component: () => import('../views/ExcelDownloader.vue'),
+    },
+    {
+      path:'/test',
+      name:'test',
+      component: () => import('../views/Demo.vue'),
     }
   ]
 })

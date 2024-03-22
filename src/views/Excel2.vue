@@ -3,8 +3,8 @@
     <div>
       <a-upload
       v-model:file-list="fileList1"
-      :before-upload="beforeUpload" @remove="handleRemove"
-      :multiple="true"  
+      :customRequest="customUpload"
+      :multiple="true"
       list-type="picture"
       class="upload-list-inline">
         <a-button>
@@ -12,15 +12,6 @@
           upload
         </a-button>
       </a-upload>
-      <a-button
-          type="primary"
-          :disabled="fileList.length === 0"
-          :loading="uploading"
-          style="margin-top: 16px"
-          @click="handleUpload"
-        >
-          {{ uploading ? 'Uploading' : 'Start Upload' }}
-        </a-button>
     </div>
     <div>
       <a-button @click="triggerDownload">下载 Excel 文件</a-button>
@@ -40,10 +31,9 @@
       return {
         ws: XLSX.utils.aoa_to_sheet([[]]),
         urls: [],
-        fileList: [],
+        fileList1: [],
         widgets: [],
-        num: 0,
-        uploading: false
+        num: 0
       };
     },
     mounted() {
@@ -61,33 +51,35 @@
         });
     },
     methods: {
-      handleRemove(file) {
-        const index = this.fileList.indexOf(file);
-        const newFileList = this.fileList.slice();
-        newFileList.splice(index, 1);
-        this.fileList= newFileList;
+      submit() {
+        this.urls.sort((a, b) => a.num - b.num);
+        console.log(this.urls)
       },
-      beforeUpload(file) {
-        this.fileList = [...this.fileList, file];
-        console.log(this.fileList)
-        return false;
+      localUpload(file) {
+        this.fileList1.push(file);
+        file.onSuccess(file.file)
+        file.status = 'success'
       },
-      handleUpload()  {
-        const formData = new FormData();
-        this.fileList.forEach(file => {
-          formData.append('files[]', file);
-        });
-        this.uploading = true;
-        axios.post('http://127.0.0.1:8088/api/file/upload', formData).then(res => {
-          this.uploading = false;
-          this.urls = res.data;
-          message.success('upload successfully');
-        }).catch(err => {
-          this.uploading = false;
-          message.error('upload failed');
+      customUpload2(){
+        fileList.forEach((file, index) => {
+          this.customUpload(file, index)
         })
       },
+      customUpload(file){
 
+        console.log(file)
+        const form = new FormData()
+        form.append('file', file.file)
+        axios.post('http://127.0.0.1:8088/api/file/upload', form).then(res => {
+          // this.urls[index] = res.data;
+          file.onSuccess(res, file.file)
+          file.status = 'success'
+          console.log(res.data)
+        }).catch(err => {
+          file.onError(err, file.file)
+          file.status = 'error'
+        })
+      },
       addHeaders(headers) {
         headers.forEach((header, index) => {
             const cellRef = XLSX.utils.encode_cell({ r: 0, c: index }); // 第一行，不同列
@@ -123,7 +115,7 @@
       downloadExcel() {
         const wb = XLSX.utils.book_new();
         console.log(this.widgets)
-        this.preHanderData([this.urls,[]]);
+        this.preHanderData([['Alice', 'Bob', 'Charlie', 'Diana'],[]]);
 
         // this.generateWorksheetFromData([['Alice', 'Bob', 'Charlie', 'Diana'],[]],1);
         XLSX.utils.book_append_sheet(wb, this.ws, 'Sheet1');
