@@ -2,7 +2,8 @@
     <div>
       <a-upload
       v-model:file-list="fileList1"
-      action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+      :customRequest="customUpload"
+      :multiple="true"
       list-type="picture"
       class="upload-list-inline">
         <a-button>
@@ -33,7 +34,7 @@
     mounted() {
         let key = 'templateLoad';
         message.loading({ content: 'Loading...', key });
-        axios.get(`http://127.0.0.1:8088/api/templates/get?id=13`, ).then(response => {
+        axios.get(`http://127.0.0.1:8088/api/templates/get?id=13`).then(response => {
           const templateData = JSON.parse(response.data.data);
           this.widgets = templateData.widgets;
 
@@ -45,6 +46,19 @@
         });
     },
     methods: {
+      customUpload(file){
+        console.log(file)
+        const form = new FormData()
+        form.append('image', file.file)
+        axios.post('http://127.0.0.1:8088/api/file/upload', form).then(res => {
+          file.onSuccess(res, file.file)
+          file.status = 'success'
+          console.log(res)
+        }).catch(err => {
+          file.onError(err, file.file)
+          file.status = 'error'
+        })
+      },
       addHeaders(headers) {
         headers.forEach((header, index) => {
             const cellRef = XLSX.utils.encode_cell({ r: 0, c: index }); // 第一行，不同列
@@ -57,17 +71,21 @@
           XLSX.utils.sheet_add_aoa(this.ws, [[value]], { origin: cellRef });
         });
       },
-      preHanderData() {
+      preHanderData(sourceData) {
         const dynamics = this.widgets.flatMap(item => item.props.switchStates);
         const dynamicsNotes = this.widgets.reduce((notesAccumulator, item) => {
         const notesForWidget = item.props.notes.filter((note, index) => item.props.switchStates[index]);
           return notesAccumulator.concat(notesForWidget);
         }, []);
         let index = 1;
+        let sourceIndex = 0;
         console.log(dynamics)
         dynamics.forEach((value) => {
           if (value == true) {
             let i = index;
+            if(dynamicsNotes[i-1] == 'iiimage') {
+              this.generateWorksheetFromData(sourceData[sourceIndex], index);
+            }
             const cellRef = XLSX.utils.encode_cell({ r: 0, c: index++ }); // 第一行，不同列
             XLSX.utils.sheet_add_aoa(this.ws, [[ i+ '. ' +dynamicsNotes[i-1]]], { origin: cellRef });
           }
@@ -76,9 +94,9 @@
       downloadExcel() {
         const wb = XLSX.utils.book_new();
         console.log(this.widgets)
-        this.preHanderData()
+        this.preHanderData([['Alice', 'Bob', 'Charlie', 'Diana'],[]]);
 
-        this.generateWorksheetFromData(['Alice', 'Bob', 'Charlie', 'Diana'],1);
+        // this.generateWorksheetFromData([['Alice', 'Bob', 'Charlie', 'Diana'],[]],1);
         XLSX.utils.book_append_sheet(wb, this.ws, 'Sheet1');
         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
   
