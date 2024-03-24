@@ -1,7 +1,7 @@
 <template>
   <div class="show">
     <div class="canvas">
-      <div v-for="(item, index) in kk" :key="index" class="widget">
+      <div v-for="(item, index) in widgets" :key="index" class="widget">
         <component
           :is="item.type + 'Widget'"
           :key="index"
@@ -41,12 +41,9 @@
       loadTemplate() {
 
         console.log(this.kk); 
-        axios.get(`http://192.168.1.102:8088/api/templates/get?id=${this.pageId}`, ).then(response => {
+        axios.get(`http://192.168.31.43:8088/api/templates/get?id=${this.pageId}`, ).then(response => {
           const templateData = JSON.parse(response.data.data);
           this.applyTemplate(templateData);
-          for (let i = 0; i < 100; i++) {
-            this.kk.push(this.widgets[0])
-          }
           ElNotification({
             title: 'Success',
             message: '加载模版成功',
@@ -99,7 +96,7 @@
   }
 
   .widget {
-    margin: 5px;
+    margin: 2px;
     padding: 5px;
     position: relative; 
     border: 1px solid #ccc;

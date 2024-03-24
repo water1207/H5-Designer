@@ -1,16 +1,31 @@
 <template>
+  <a-affix>
+  <a-page-header
+    style="padding: 5px 24px; background: #fff; border: 1px solid rgb(235, 237, 240)"
+    title="Title"
+    sub-title="This is a subtitle"
+    @back="() => null">
+    <template #tags>
+        <a-tag color="blue">编辑中</a-tag>
+      </template>
+    <template #extra>
+        <a-button key="1" type="primary">保存</a-button>
+    </template>
+  </a-page-header>
+  </a-affix>
   <a-row>
     <a-col :span="2"><div class="grid-content ep-bg-purple-dark" /></a-col>
-    <a-col :span="6" align="middle">
-      <a-affix :offset-top="120">
-      <a-button type="primary">Offset top 120px</a-button>
-        <div class="panel">
+    <a-col :span="6">
+      <a-affix :offset-top="220">
+        <a-card title="样式库" :bordered="false" style="width: 300px">
+          <a-flex :gap="10"  vertical >
           <a-button @click="addWidget('CombineWidget')">Add CombineWidget</a-button>
           <a-button @click="addWidget('RadioWidget')">Add RadioWidget</a-button>
           <a-button @click="addWidget('SubTitleWidget')">Add TitleWithLine</a-button>
           <a-button @click="addWidget('TitleWidget')">Add TitleWidget</a-button>
           <a-button @click="addWidget('ProductWidget')">Add ProductWidget</a-button>
-        </div>
+          </a-flex>
+        </a-card>
       </a-affix>
     </a-col>
     <a-col :span="8">
@@ -19,22 +34,44 @@
           @mouseenter="cancelDelay();hoverIndex = index" 
           @mouseleave="delayHide(index)"
           >
-          <component
+          <a-popover placement="right">
+            <template #content>
+              <a-flex :gap="2" vertical>
+              <a-button @click="moveUp(index)">
+                <template #icon>
+                  <CaretUpOutlined style="color:#3875f6" />
+                </template>
+              </a-button>
+              <a-button  @click="moveDown(index)">
+                <template #icon>
+                  <CaretDownOutlined style="color:#3875f6" />
+                </template>
+              </a-button>
+              <a-button @click="removeWidget(index)" danger>
+                <template #icon>
+                  <DeleteOutlined />
+                </template>
+              </a-button>
+              </a-flex>
+            </template>
+            <component
             :is="item.type + 'Widget'"
             :key="index"
             v-bind="item.props"
             @update:content="(eventData) => handleWidgetUpdate(eventData, index)"
           ></component>
-          <div class="toolBox" v-show="hoverIndex === index">
+          </a-popover>
+
+          <!-- <div class="toolBox" v-show="hoverIndex === index">
             <a-button size="small" type="primary" icon="ArrowUpBold" @click="moveUp(index)" circle plain style="margin-bottom: 5px;"/>
             <a-button size="small" type="primary" icon="ArrowDownBold" @click="moveDown(index)" circle plain style="margin-bottom: 5px;"/> 
             <a-button size="small" type="danger" icon="Delete" @click="removeWidget(index)" circle plain/> 
-          </div>
+          </div> -->
         </div>
       </div>
     </a-col>
     <a-col :span="7" :offset="1">
-      <a-affix :offset-top="120">
+      <a-affix :offset-top="220">
         <a-button type="primary">Offset top 120px</a-button><br>
         <input type="text" v-model="tName" placeholder="模版名称"><br>
         <button @click="saveTemplate()">模版保存</button><br>  
@@ -43,11 +80,38 @@
         <button @click="updateTemplate(1)">模版更新</button><br>
         <input type="file" @change="handleFileUpload" />
         <button @click="submitFile">上传 Excel</button>
-        <!-- <input type="file" @change="handleFileUpload"> -->
       </a-affix>
+      <a-affix :offset-top="420">
+        <div>
+      <a-upload
+      v-model:file-list="fileList"
+      :before-upload="beforeUpload" @remove="handleRemove"
+      :multiple="true"  
+      list-type="picture"
+      class="upload-list-inline">
+        <a-button>
+          <upload-outlined></upload-outlined>
+          添加资源文件
+        </a-button>
+      </a-upload>
+      <a-button
+          type="primary"
+          :disabled="fileList.length === 0"
+          :loading="uploading"
+          style="margin-top: 16px"
+          @click="handleUpload"
+        >
+          {{ uploading ? '上传中' : '上传' }}
+      </a-button>
+    </div>
+    <div>
+      <a-button @click="triggerDownload">下载 Excel 文件</a-button> 
+    </div>
+    </a-affix>
+      
     </a-col>
+
   </a-row>
-  <el-backtop :right="400" :bottom="100" />
 </template>
 
 <script>
@@ -56,7 +120,8 @@ import RadioWidget from '../components/widgets/RadioWidget.vue'
 import SubTitleWidget from '../components/widgets/SubTitleWidget.vue'
 import TitleWidget from '@/components/widgets/TitleWidget.vue'
 import ProductWidget from '@/components/widgets/ProductWidget.vue'
-import { notification, message } from 'ant-design-vue';
+import { message } from 'ant-design-vue';
+import { saveAs } from 'file-saver';
 import axios from 'axios'
 import * as XLSX from 'xlsx'
 
@@ -71,17 +136,95 @@ export default {
   data() {
     return {
       widgets: [],
-      dynamics: [],
-      dynamicsNotes: [],
+      // dynamics: [],
+      // dynamicsNotes: [],
       pages: [],
       hoverIndex: null, // 用于跟踪鼠标悬浮的组件索引
       hideTimeoutId: null,
       tName: "",
       tId: "",
-      file: null,
+
+      ws: XLSX.utils.aoa_to_sheet([[]]),
+      urls: [],
+      fileList: [],
+      uploading: false,
     }
   },
   methods: {
+    // panel2
+    handleRemove(file) {
+      const index = this.fileList.indexOf(file);
+      const newFileList = this.fileList.slice();
+      newFileList.splice(index, 1);
+      this.fileList= newFileList;
+    },
+    beforeUpload(file) {
+      this.fileList = [...this.fileList, file];
+      console.log(this.fileList)
+      return false;
+    },
+    handleUpload()  {
+      const formData = new FormData();
+      this.fileList.forEach(file => {
+        formData.append('files[]', file.originFileObj);
+      });
+      this.uploading = true;
+      axios.post('http://127.0.0.1:8088/api/file/upload', formData).then(res => {
+        this.uploading = false;
+        this.urls = res.data;
+        message.success('upload successfully'+this.urls);
+      }).catch(err => {
+        this.uploading = false;
+        message.error('upload failed');
+      })
+    },
+    generateWorksheetFromData(data, columnNumber) {
+      data.forEach((value, index) => {
+        const cellRef = XLSX.utils.encode_cell({ r: index+1, c: columnNumber });
+        XLSX.utils.sheet_add_aoa(this.ws, [[value]], { origin: cellRef });
+      });
+    },
+    preExcelData(sourceData) {
+      const dynamics = this.widgets.flatMap(item => item.props.switchStates);
+      const dynamicsNotes = this.widgets.reduce((notesAccumulator, item) => {
+      const notesForWidget = item.props.notes.filter((note, index) => item.props.switchStates[index]);
+        return notesAccumulator.concat(notesForWidget);
+      }, []);
+      let index = 1;
+      let sourceIndex = 0;
+      console.log(dynamics)
+      dynamics.forEach((value) => {
+        if (value == true) {
+          let i = index;
+          if(dynamicsNotes[i-1] == 'iiimage') {
+            console.log('hhh '+ sourceData[sourceIndex])
+            this.generateWorksheetFromData(sourceData[sourceIndex], index);
+          }
+          const cellRef = XLSX.utils.encode_cell({ r: 0, c: index++ }); // 第一行，不同列
+          XLSX.utils.sheet_add_aoa(this.ws, [[ i+ '. ' +dynamicsNotes[i-1]]], { origin: cellRef });
+        }
+      });
+    },
+    downloadExcel() {
+      const wb = XLSX.utils.book_new();
+      this.preExcelData([this.urls,[]]);
+
+      XLSX.utils.book_append_sheet(wb, this.ws, 'Sheet1');
+      const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+      // 修正了类型转换的逻辑
+      const buffer = new ArrayBuffer(wbout.length);
+      const view = new Uint8Array(buffer);
+      for (let i = 0; i < wbout.length; i++) {
+        view[i] = wbout.charCodeAt(i) & 0xFF;
+      }
+
+      saveAs(new Blob([buffer], { type: "application/octet-stream" }), "test.xlsx");
+    },
+    triggerDownload() {
+      this.downloadExcel();
+    },
+
     // 添加组件至画布
     addWidget(type) {
       const defaultProps = {
@@ -198,49 +341,8 @@ export default {
     // 应用模版 
     applyTemplate(templateData) {
       this.widgets = templateData.widgets;
-      this.dynamics = templateData.dynamics;
-      this.dynamicsNotes = templateData.dynamicsNotes;
-    },
-    handleFileUpload(event) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = e.target.result;
-        const workbook = XLSX.read(data, { type: 'binary' });
-        const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-        this.processExcelData(jsonData);
-      };
-      reader.readAsBinaryString(file);
-    },
-    processExcelData(excelData) {
-      // excelData 是一个数组，每个元素代表一行Excel数据
-      // 初始化一个数组，用于存储每个页面的数据
-      const pages = excelData.map(row => {
-        // 根据Excel行数据和widgets模板创建页面数据结构
-        return this.generateHtmls(row);
-      });
-      this.pages = pages;
-      // this.exportHtmlPages(pages);
-    },
-    publishHtml() {
-      const content = this.generateHtmls();
-      axios.post('http://127.0.0.1:8088/api/pages/publish', {content: content}).then(response => {
-        ElNotification({
-          title: 'Success',
-          message: '页面发布成功',
-          type: 'success',
-          duration: 2000,
-        })
-        console.log('页面发布成功', response);
-      }).catch(error => {
-        ElNotification({
-          title: 'Error',
-          message: '页面发布失败',
-          type: 'error',
-          duration: 2000,
-        })
-        console.error('页面发布失败', error);
-      });
+      // this.dynamics = templateData.dynamics;
+      // this.dynamicsNotes = templateData.dynamicsNotes;
     },
 
     handleFileUpload(event) {
@@ -250,7 +352,7 @@ export default {
       const formData = new FormData();
       formData.append('file', this.file);
 
-      axios.post('http://124.222.242.75//api/page/upload', formData, {
+      axios.post('http://127.0.0.1:8088/api/page/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -264,20 +366,6 @@ export default {
       });
     },
 
-    generateWorksheetFromData(data) {
-      const ws = XLSX.utils.aoa_to_sheet([]);
-
-      // 填充标题行
-      XLSX.utils.sheet_add_aoa(ws, [['ID', 'Name']], {origin: 'A1'});
-
-  
-      data.forEach((name, index) => {
-        const cellRef = XLSX.utils.encode_cell({r: index + 1, c: 1}); // r 行号，c 列号，从 0 开始
-        ws[cellRef] = {t: 's', v: name}; // t: 类型（s = 字符串），v: 值
-      });
-
-      return ws;
-    },
     // 移除组件
     removeWidget(index) {
       this.widgets.splice(index, 1);
@@ -326,7 +414,10 @@ export default {
     /* overflow: hidden; */
     position: relative;
     padding-top: 10px;
+    background: #fff;
+    box-shadow: 0 5px 5px rgba(71, 71, 71, 0.3);
   }
+  
   
   .widget {
     margin: 5px;
@@ -350,4 +441,5 @@ export default {
       margin-left: 0px;
     }
   }
+
 </style>

@@ -2,14 +2,14 @@
   <main>
     <div>
       <a-upload
-      v-model:file-list="fileList1"
+      v-model:file-list="fileList"
       :before-upload="beforeUpload" @remove="handleRemove"
       :multiple="true"  
       list-type="picture"
       class="upload-list-inline">
         <a-button>
           <upload-outlined></upload-outlined>
-          upload
+          添加资源文件
         </a-button>
       </a-upload>
       <a-button
@@ -19,12 +19,11 @@
           style="margin-top: 16px"
           @click="handleUpload"
         >
-          {{ uploading ? 'Uploading' : 'Start Upload' }}
-        </a-button>
+          {{ uploading ? '上传中' : '上传' }}
+      </a-button>
     </div>
     <div>
-      <a-button @click="triggerDownload">下载 Excel 文件</a-button>
-      <a-button @click="customUpload2">提交</a-button>
+      <a-button @click="triggerDownload">下载 Excel 文件</a-button> 
     </div>
   </main>
   </template>
@@ -42,17 +41,17 @@
         urls: [],
         fileList: [],
         widgets: [],
-        num: 0,
-        uploading: false
+        uploading: false,
+        templateId: null,
       };
     },
     mounted() {
         let key = 'templateLoad';
         message.loading({ content: 'Loading...', key });
-        axios.get(`http://127.0.0.1:8088/api/templates/get?id=13`).then(response => {
+        axios.get(`http://127.0.0.1:8088/api/templates/get?id=14`).then(response => {
           const templateData = JSON.parse(response.data.data);
           this.widgets = templateData.widgets;
-
+          
           message.success({ content: '加载模版成功', key , duration: 2});
           console.log('加载模板数据成功', response);
         }).catch(error => {
@@ -75,7 +74,8 @@
       handleUpload()  {
         const formData = new FormData();
         this.fileList.forEach(file => {
-          formData.append('files[]', file);
+          console.log(file)
+          formData.append('files[]', file.originFileObj);
         });
         this.uploading = true;
         axios.post('http://127.0.0.1:8088/api/file/upload', formData).then(res => {
@@ -87,20 +87,13 @@
           message.error('upload failed');
         })
       },
-
-      addHeaders(headers) {
-        headers.forEach((header, index) => {
-            const cellRef = XLSX.utils.encode_cell({ r: 0, c: index }); // 第一行，不同列
-            XLSX.utils.sheet_add_aoa(this.ws, [[header]], { origin: cellRef });
-        });
-      },
       generateWorksheetFromData(data, columnNumber) {
         data.forEach((value, index) => {
           const cellRef = XLSX.utils.encode_cell({ r: index+1, c: columnNumber });
           XLSX.utils.sheet_add_aoa(this.ws, [[value]], { origin: cellRef });
         });
       },
-      preHanderData(sourceData) {
+      preExcelData(sourceData) {
         const dynamics = this.widgets.flatMap(item => item.props.switchStates);
         const dynamicsNotes = this.widgets.reduce((notesAccumulator, item) => {
         const notesForWidget = item.props.notes.filter((note, index) => item.props.switchStates[index]);
@@ -114,6 +107,7 @@
             let i = index;
             if(dynamicsNotes[i-1] == 'iiimage') {
               this.generateWorksheetFromData(sourceData[sourceIndex], index);
+              sourceIndex++;
             }
             const cellRef = XLSX.utils.encode_cell({ r: 0, c: index++ }); // 第一行，不同列
             XLSX.utils.sheet_add_aoa(this.ws, [[ i+ '. ' +dynamicsNotes[i-1]]], { origin: cellRef });
@@ -123,9 +117,8 @@
       downloadExcel() {
         const wb = XLSX.utils.book_new();
         console.log(this.widgets)
-        this.preHanderData([this.urls,[]]);
+        this.preExcelData([this.urls,[]]);
 
-        // this.generateWorksheetFromData([['Alice', 'Bob', 'Charlie', 'Diana'],[]],1);
         XLSX.utils.book_append_sheet(wb, this.ws, 'Sheet1');
         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
   

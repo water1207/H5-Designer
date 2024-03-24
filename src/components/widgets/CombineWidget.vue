@@ -1,7 +1,8 @@
 <template>
+  <main>
     <div class="Combine"
-    @mouseenter="buttonVisiable = true" 
-    @mousaeave="buttonVisiable = false">
+    @mouseenter="buttonVisiable = true"
+    @mouseleave="buttonVisiable = false">
       <h2 :style="ddstyle(0)"> {{ myTitle }} </h2>
       <div class="line">
       </div>
@@ -40,7 +41,7 @@
         </a-form-item>
       </a-form>
     </a-modal>
-
+  </main>
   </template>
   
   <script>
