@@ -1,50 +1,50 @@
 <template>
-  <a-layout>
-    <a-layout-header 
-        style="background: #fff; box-shadow: 0 3px 5px rgba(71, 71, 71, 0.3); z-index: 100;">
+    <a-layout class="layout">
+      <a-layout-header 
+        style="background: #fff; box-shadow: 0 3px 5px rgba(71, 71, 71, 0.3);">
         <a-menu
           v-model:selectedKeys="selectedKeys"
           theme="light"
           mode="horizontal"
-          :style="{ lineHeight: '62px' , display:'block', fontSize: '16px' ,width: '100%'}"
+          :style="{ lineHeight: '64px' , display:'block', fontSize: '16px' }"
         >
           <a-menu-item key="1" >
             <a-flex align="center">
-              <!-- <template #icon> -->
-              <ExperimentTwoTone style="font-size: 30px;" />
-              <!-- </template> -->
-              H5 Designer for K.o.
+              <template #icon>
+                <ExperimentTwoTone style="font-size: 35px;" />
+              </template>
+              Designer with QRCode
             </a-flex>
           </a-menu-item>
           <a-menu-item key="2" :style="{float:'right'}">nav 2</a-menu-item>
           <a-menu-item key="3" :style="{float:'right'}">nav 3</a-menu-item>
           <a-menu-item key="4" :style="{float:'right'}">nav 3</a-menu-item>
-      </a-menu>
-    </a-layout-header>
-    <a-layout>
-      <RouterView />
+        </a-menu>
+      </a-layout-header>
+      
+      <a-layout-content>
+        <RouterView />
+      </a-layout-content>
     </a-layout>
-  </a-layout>
-</template>
-<script setup>
 
+</template>
+
+<script setup>
+import { RouterView } from 'vue-router'
+import { ref } from 'vue'
+
+const selectedKeys = ref(['1']);
 </script>
 
 <style scoped>
+.flex-grow {
+  flex-grow: 1;
+} 
 #components-layout-demo-top-side-2 .logo {
   float: left;
   width: 120px;
   height: 31px;
   margin: 16px 24px 16px 0;
   background: rgba(255, 255, 255, 0.3);
-}
-
-.ant-row-rtl #components-layout-demo-top-side-2 .logo {
-  float: right;
-  margin: 16px 0 16px 24px;
-}
-
-.site-layout-background {
-  background: #fff;
 }
 </style>

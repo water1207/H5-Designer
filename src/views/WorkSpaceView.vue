@@ -1,62 +1,170 @@
 <template>
-    <a-layout-sider v-model:collapsed="collapsed" collapsible>
-      <div class="logo" />
-      <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
-        <a-menu-item key="1">
-          <pie-chart-outlined />
-          <span>Option 1</span>
-        </a-menu-item>
-        <a-menu-item key="2">
-          <desktop-outlined />
-          <span>Option 2</span>
-        </a-menu-item>
-        <a-sub-menu key="sub1">
-          <template #title>
-            <span>
-              <user-outlined />
-              <span>User</span>
-            </span>
-          </template>
-          <a-menu-item key="3">Tom</a-menu-item>
-          <a-menu-item key="4">Bill</a-menu-item>
-          <a-menu-item key="5">Alex</a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu key="sub2">
-          <template #title>
-            <span>
-              <team-outlined />
-              <span>Team</span>
-            </span>
-          </template>
-          <a-menu-item key="6">Team 1</a-menu-item>
-          <a-menu-item key="8">Team 2</a-menu-item>
-        </a-sub-menu>
-        <a-menu-item key="9">
-          <file-outlined />
-          <span>File</span>
-        </a-menu-item>
-      </a-menu>
+	<a-layout-sider width="200" style="background: #fff">
+		<a-menu
+			v-model:selectedKeys="selectedKeys2"
+			v-model:openKeys="openKeys"
+			mode="inline"
+			:style="{ height: '100%', borderRight: 0}"
+		>
+			<div style="margin-top:40px"> </div>
+			<a-menu-item key="1">
+				<AppstoreTwoTone />
+				<span>数据总览</span>
+			</a-menu-item>
+			<a-sub-menu key="sub1">
+				<template #title>
+					<span>
+						<user-outlined />
+						subnav 1
+					</span>
+				</template>
+				<a-menu-item key="1">option1</a-menu-item>
+				<a-menu-item key="2">option2</a-menu-item>
+				<a-menu-item key="3">option3</a-menu-item>
+				<a-menu-item key="4">option4</a-menu-item>
+			</a-sub-menu>
+			<a-sub-menu key="sub2">
+				<template #title>
+					<span>
+						<laptop-outlined />
+						subnav 2
+					</span>
+				</template>
+				<a-menu-item key="5">option5</a-menu-item>
+				<a-menu-item key="6">option6</a-menu-item>
+				<a-menu-item key="7">option7</a-menu-item>
+				<a-menu-item key="8">option8</a-menu-item>
+			</a-sub-menu>
+			<a-sub-menu key="sub3">
+				<template #title>
+					<span>
+						<notification-outlined />
+						subnav 3
+					</span>
+				</template>
+				<a-menu-item key="9">option9</a-menu-item>
+				<a-menu-item key="10">option10</a-menu-item>
+				<a-menu-item key="11">option11</a-menu-item>
+				<a-menu-item key="12">option12</a-menu-item>
+			</a-sub-menu>
+		</a-menu>
     </a-layout-sider>
+		<a-layout-content
+			:style="{ padding: '0 80px', margin: 0, minHeight: '100vh', }"
+		>
+		
+		<a-card title="页面访问量" :bordered="false" style="width: 60%; margin-top: 20px;">
+			<a-statistic
+            title="Feedback"
+            :value="11.28"
+            :precision="2"
+            suffix="%"
+            :value-style="{ color: '#3f8600' }"
+            style="margin-right: 50px"
+          >
+            <template #prefix>
+              <arrow-up-outlined />
+            </template>
+          </a-statistic>
+    </a-card>
+		<a-card title="已发布的页面" :bordered="false" style="width: 100%; margin-top: 20px;">
+			<a-table :columns="columns" :data-source="data">
+				<template #headerCell="{ column }">
+					<template v-if="column.key === 'name'">
+						<span>
+							<smile-outlined />
+							Name
+						</span>
+					</template>
+				</template>
+
+				<template #bodyCell="{ column, record }">
+					<template v-if="column.key === 'name'">
+							{{ record.name }}
+					</template>
+					<template v-else-if="column.key === 'tags'">
+						<span>
+							<a-tag
+								v-for="tag in record.tags"
+								:key="tag"
+								:color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
+							>
+								{{ tag.toUpperCase() }}
+							</a-tag>
+						</span>
+					</template>
+					<template v-else-if="column.key === 'createdAt'">
+						{{ record.createdAt }}
+					</template>
+					<template v-else-if="column.key === 'qrcode'">
+						<a-qrcode ref="qrcodeCanvasRef" value="http://www.antdv.com" size="100" />
+					</template>
+					<template v-else-if="column.key === 'action'">
+						<span>
+							<a>编辑</a>
+							<a-button type="primary" @click="dowloadChange">Downlaod</a-button>
+						</span>
+					</template>
+				</template>
+			</a-table>
+		</a-card>
+	</a-layout-content>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-const collapsed = ref(false);
-const selectedKeys = ref(['1']);
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+const qrcodeCanvasRef = ref();
+const dowloadChange = async () => {
+  const url = await qrcodeCanvasRef.value.toDataURL();
+  const a = document.createElement('a');
+  a.download = 'QRCode.png';
+  a.href = url;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
+
+const columns = [
+  {
+    name: '页面名称',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createdAt',
+    key: 'createdAt',
+  },
+  {
+    title: 'Address',
+    dataIndex: 'address',
+    key: 'address',
+  },
+  {
+    title: 'Tags',
+    key: 'tags',
+    dataIndex: 'tags',
+  },
+	{
+		title: 'QRCode',
+		key: 'qrcode',
+	},
+  {
+    title: 'Action',
+    key: 'action',
+  },
+
+];
+const data = ref(null)
+async function fetchData() {
+  try {
+    const response = await axios.get('http://127.0.0.1:8088/api/page/getAll');
+    data.value = response.data; // 将响应数据赋值给 myData
+  } catch (error) {
+    console.error('请求失败:', error);
+  }
+}
+
+onMounted(fetchData);
 </script>
-
-<style scoped>
-#components-layout-demo-side .logo {
-  height: 32px;
-  margin: 16px;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.site-layout .site-layout-background {
-  background: #fff;
-}
-[data-theme='dark'] .site-layout .site-layout-background {
-  background: #141414;
-}
-
-</style>
