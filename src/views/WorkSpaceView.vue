@@ -68,7 +68,7 @@
           </a-statistic>
     </a-card>
 		<a-card title="已发布的页面" :bordered="false" style="width: 100%; margin-top: 20px;">
-			<a-table :columns="columns" :data-source="data">
+			<a-table :columns="columns" :data-source="data" :row-key="(record, index) => index">
 				<template #headerCell="{ column }">
 					<template v-if="column.key === 'name'">
 						<span>
@@ -94,10 +94,11 @@
 						</span>
 					</template>
 					<template v-else-if="column.key === 'createdAt'">
-						{{ record.createdAt }}
+						{{ dayjs(record.createdAt).format('YYYY/MM/DD HH:mm:ss') }}
+						<!-- {{ formatDate(record.createdAt) }} -->
 					</template>
 					<template v-else-if="column.key === 'qrcode'">
-						<a-qrcode ref="qrcodeCanvasRef" value="http://www.antdv.com" size="100" />
+						<a-qrcode ref="qrcodeCanvasRef" :value="`http://127.0.0.1:3000/page/${record.pageId}`" size="100" />
 					</template>
 					<template v-else-if="column.key === 'action'">
 						<span>
@@ -114,6 +115,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import dayjs from 'dayjs';
 const qrcodeCanvasRef = ref();
 const dowloadChange = async () => {
   const url = await qrcodeCanvasRef.value.toDataURL();
@@ -125,7 +127,18 @@ const dowloadChange = async () => {
   document.body.removeChild(a);
 };
 
+function formatDate(dateString) {
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('default', options).format(date).replace(/\//g, '-').replace(',', '');
+}
 const columns = [
+  {
+		title: '序号',
+		dataIndex: 'index',
+		key: 'index',
+		customRender: ({ index }) => `${index + 1}`, 
+  },
   {
     name: '页面名称',
     dataIndex: 'name',
@@ -146,10 +159,10 @@ const columns = [
     key: 'tags',
     dataIndex: 'tags',
   },
-	{
-		title: 'QRCode',
-		key: 'qrcode',
-	},
+  {
+	title: 'QRCode',
+	key: 'qrcode',
+  },
   {
     title: 'Action',
     key: 'action',

@@ -9,8 +9,9 @@
         <a-tag color="blue">编辑中</a-tag>
       </template>
     <template #extra>
-        <a-button key="1" type="primary" @click = "open = true;">保存并发布</a-button>
-    </template>
+        <a-button v-if="pageId == null" key="1" type="primary" @click = "open = true;" >保存并发布</a-button>
+        <a-button v-else key="2" type="primary" @click = "updatePage()" >更新页面</a-button>
+      </template>
   </a-page-header>
   </a-affix>
   <a-row>
@@ -64,9 +65,7 @@
     <a-col :span="7" :offset="1">
       <a-affix :offset-top="220">
         <a-button type="primary">Offset top 120px</a-button><br>
-        <input type="text" v-model="tName" placeholder="模版名称"><br>
         <button @click="saveTemplate()">保存并发布</button><br>  
-        <input type="text" v-model="tId" placeholder="模版ID"><br>
         <button @click="loadTemplate()">页面加载</button><br>
         <button @click="updateTemplate()">页面更新</button><br>
       </a-affix>
@@ -104,6 +103,12 @@ export default {
       hideTimeoutId: null,
       open: false,
       pageName: '未命名的页面',
+      pageId: this.$route.params.id
+    }
+  },
+  created() {
+    if (this.pageId) {
+      this.loadPage(this.pageId)
     }
   },
   methods: {
@@ -189,40 +194,46 @@ export default {
       });
     },
     // 更新模版
-    updateTemplate() {
-      let key = 'templateUpdate';
+    updatePage() {
+      let key = 'pageUpdate';
       message.loading({ content: 'Loading...', key });
 
-      const templateData = { 
-        id: this.tId,
-        data: JSON.stringify({widgets: this.widgets, dynamics: this.dynamics, dynamicsNotes: this.dynamicsNotes}),
+      const widgets = this.widgets;
+
+      const pageData = { 
+        id: this.pageId,
+        name: this.pageName,
+        data: JSON.stringify({widgets}),
       };
 
-      axios.post('http://127.0.0.1:8088/api/templates/update', templateData).then(response => {
-        message.success({ content: '模板更新成功', key , duration: 2});
-        console.log('模板更新成功', response);
+      // 根据需要返回或使用 dynamics 和 dynamicsNotes
+      axios.post('http://127.0.0.1:8088/api/page/update', pageData).then(response => { 
+        message.success({ content: '页面更新成功', key , duration: 2});
+        console.log('页面更新成功', response);
       }).catch(error => {
-        message.error({ content: '模板更新失败', key , duration: 2 });
-        console.error('模板更新失败', error);
+        message.error({ content: '页面更新失败', key , duration: 2 });
+        console.error('页面更新失败', error);
       });
     },
+
     // 加载模版
-    loadTemplate() {
-      let key = 'templateLoad';
-      message.loading({ content: 'Loading...', key });
-      axios.get(`http://127.0.0.1:8088/api/templates/get?id=${this.tId}`, ).then(response => {
-        const templateData = JSON.parse(response.data.data);
-        this.applyTemplate(templateData);
-        message.success({ content: '加载模版成功', key , duration: 2});
-        console.log('加载模板数据成功', response);
+    loadPage(id) {
+      let key = 'init';
+      axios.get(`http://127.0.0.1:8088/api/page/get?id=${id}`, ).then(response => {
+        const pageData = JSON.parse(response.data.content);
+        this.widgets = pageData.widgets
+        this.pageName = response.data.name
+        message.success({ content: '加载页面成功', key , duration: 2});
+        console.log('加载页面数据成功', response);
       }).catch(error => {
-        message.error({ content: '加载模版失败', key , duration: 2 });
-        console.error("加载模板数据失败", error);
+        message.error({ content: '加载页面失败', key , duration: 2});
+        console.error("加载页面数据失败", error);
       });
     },
     // 应用模版 
     applyTemplate(templateData) {
       this.widgets = templateData.widgets;
+      console.log('模板数据', templateData);
       // this.dynamics = templateData.dynamics;
       // this.dynamicsNotes = templateData.dynamicsNotes;
     },

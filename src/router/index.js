@@ -25,8 +25,9 @@ const router = createRouter({
       props: true // 允许将路由参数作为props传递给组件
     },
     {
-      path: '/design/page',
+      path: '/design/page/:id?',
       name: 'pagedesign',
+      props: true ,
       component: () => import('../views/PageDesignView.vue'),
     },
     {
