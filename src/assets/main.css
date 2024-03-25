@@ -12,6 +12,7 @@
 
 /* Sub Title */
 .SubTitle {
+  padding: 0 5%;
   text-align: center;
   height: auto;
 
@@ -41,7 +42,7 @@
     line-height: 1;
     margin: 0 0;
     padding-bottom: 10px;
-    padding-top: 10px
+    padding-top: 10px;
   }
 }
 
@@ -92,13 +93,13 @@
     width: 100%;
     border-top: 1px solid var(--el-border-color);
   }
+}
 
-  .editButton{
-    position: absolute;
-    top: 5px; /* 根据需要调整 */
-    right: 5px; /* 根据需要调整 */
-    z-index: 10; /* 确保按钮在卡片内容之上 */
-  }
+.editButton{
+  position: absolute;
+  top: 5px; /* 根据需要调整 */
+  right: 5px; /* 根据需要调整 */
+  z-index: 10; /* 确保按钮在卡片内容之上 */
 }
 
 

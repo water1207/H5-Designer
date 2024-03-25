@@ -1,6 +1,6 @@
 <template>
-  <div class="show">
-    <div class="canvas">
+  <main>
+    <div class="canvas2">
       <div v-for="(item, index) in widgets" :key="index" class="widget">
         <component
           :is="item.type + 'Widget'"
@@ -10,7 +10,7 @@
         ></component>
       </div>
     </div>
-  </div>
+  </main>
   </template>
   
   <script>
@@ -19,61 +19,44 @@
   import SubTitleWidget from '@/components/widgets/SubTitleWidget.vue';
   import TitleWidget from '@/components/widgets/TitleWidget.vue';
   import ProductWidget from '@/components/widgets/ProductWidget.vue';
+  import ImageWidget from '@/components/widgets/ImageWidget.vue';
+  import Image2Widget from '@/components/widgets/Image2Widget.vue';
   import axios from 'axios'
 
   export default {
     components: {
-        CombineWidget,
-        RadioWidget,
-        SubTitleWidget,
-        TitleWidget,
-        ProductWidget,
+      CombineWidget,
+      RadioWidget,
+      SubTitleWidget,
+      TitleWidget,
+      ProductWidget,
+      ImageWidget,
+      Image2Widget
     },
     data() {
       return {
-        pageId: this.$route.params.id, // 假设使用vue-router并从URL获取pageId
+        pageId: this.$route.params.id,// 假设使用vue-router并从URL获取pageId
         widgets: [],
         kk:[]
       };
     },
     methods: {
-      
-      loadTemplate() {
-
-        console.log(this.kk); 
-        axios.get(`http://192.168.31.43:8088/api/templates/get?id=${this.pageId}`, ).then(response => {
-          const templateData = JSON.parse(response.data.data);
-          this.applyTemplate(templateData);
-          ElNotification({
-            title: 'Success',
-            message: '加载模版成功',
-            type: 'success',
-            duration: 2000,
-          })
-          console.log('加载模板数据成功', response);
+      loadPage(id) {
+        let key = 'init';
+        axios.get(`http://192.168.31.43:8088/api/page/get?id=${id}`, ).then(response => {
+          const pageData = JSON.parse(response.data.content);
+          this.widgets = pageData.widgets
+          this.pageName = response.data.name
+          message.success({ content: '加载页面成功', key , duration: 2});
+          console.log('加载页面数据成功', response);
         }).catch(error => {
-          ElNotification({
-            title: 'Error',
-            message: '加载模版失败',
-            type: 'error',
-            duration: 2000,
-          })
-          console.error("加载模板数据失败", error);
+          message.error({ content: '加载页面失败', key , duration: 2});
+          console.error("加载页面数据失败", error);
         });
       },
-      // 应用模版 
-      applyTemplate(templateData) {
-        this.widgets = templateData.widgets;
-        this.dynamics = templateData.dynamics;
-        this.dynamicsNotes = templateData.dynamicsNotes;
-      },
-      renderWidgets() {
-        // 基于this.widgets来渲染组件到canvas上
-        // 这部分具体实现依赖于你的canvas库和widget渲染逻辑
-      }
     },
     mounted() {
-      this.loadTemplate();
+      this.loadPage(this.pageId);
     }
   }
   </script>
@@ -95,12 +78,23 @@
     overflow: hidden;
   }
 
+  .canvas2 {
+    max-width: 450px; /* 或者使用 100vw 来确保宽度在视口宽度内 */
+    min-height: 833px; /* 模拟常见的H5页面高度 */
+    border: 1px solid #ccc;
+    margin: 15px auto;
+    overflow: hidden;
+    position: relative;
+    padding: 10px 0;
+    background: #fff;
+    /* box-shadow: 0 4px 5px rgba(71, 71, 71, 0.3); */
+    /* border-radius: 5px; */
+  }
   .widget {
     margin: 2px;
-    padding: 5px;
+    padding: 3px 5px;
     position: relative; 
-    border: 1px solid #ccc;
-    width: fit-content;
+    /* border: 1px solid #ccc; */
   }
   </style>
  

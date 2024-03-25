@@ -3,27 +3,31 @@
   <a-page-header
     style="padding: 5px 24px; background: #fff; border: 1px solid rgb(235, 237, 240)"
     title="Title"
-    sub-title="This is a subtitle"
+    :sub-title="tName"
     @back="() => null">
     <template #tags>
         <a-tag color="blue">编辑中</a-tag>
       </template>
     <template #extra>
-        <a-button key="1" type="primary">保存</a-button>
+      <a-button v-if="tId == ''" key="1" type="primary" @click = "open = true;">创建</a-button>
+        <a-button v-else key="2" type="primary" @click = "updateTemplate()">更新</a-button>
     </template>
   </a-page-header>
   </a-affix>
   <a-row>
     <a-col :span="2"><div class="grid-content ep-bg-purple-dark" /></a-col>
     <a-col :span="6">
-      <a-affix :offset-top="220">
+      <a-affix :offset-top="160">
         <a-card title="样式库" :bordered="false" style="width: 300px">
           <a-flex :gap="10"  vertical >
           <a-button @click="addWidget('CombineWidget')">Add CombineWidget</a-button>
           <a-button @click="addWidget('RadioWidget')">Add RadioWidget</a-button>
-          <a-button @click="addWidget('SubTitleWidget')">Add TitleWithLine</a-button>
+          <a-button @click="addWidget('SubTitleWidget')">Add SubTitleWidget</a-button>
           <a-button @click="addWidget('TitleWidget')">Add TitleWidget</a-button>
           <a-button @click="addWidget('ProductWidget')">Add ProductWidget</a-button>
+          <a-button @click="addWidget('ImageWidget')">Add 弹性图片</a-button>
+          <a-button @click="addWidget('Image2Widget')">Add 16:9固定比例图片</a-button>
+          <a-button @click="addWidget('Image3Widget')">Add 与内容齐平的图片</a-button>
           </a-flex>
         </a-card>
       </a-affix>
@@ -61,12 +65,6 @@
             @update:content="(eventData) => handleWidgetUpdate(eventData, index)"
           ></component>
           </a-popover>
-
-          <!-- <div class="toolBox" v-show="hoverIndex === index">
-            <a-button size="small" type="primary" icon="ArrowUpBold" @click="moveUp(index)" circle plain style="margin-bottom: 5px;"/>
-            <a-button size="small" type="primary" icon="ArrowDownBold" @click="moveDown(index)" circle plain style="margin-bottom: 5px;"/> 
-            <a-button size="small" type="danger" icon="Delete" @click="removeWidget(index)" circle plain/> 
-          </div> -->
         </div>
       </div>
     </a-col>
@@ -84,11 +82,11 @@
       <a-affix :offset-top="420">
         <div>
       <a-upload
-      v-model:file-list="fileList"
-      :before-upload="beforeUpload" @remove="handleRemove"
-      :multiple="true"  
-      list-type="picture"
-      class="upload-list-inline">
+        v-model:file-list="fileList"
+        :before-upload="beforeUpload" @remove="handleRemove"
+        :multiple="true"  
+        list-type="picture"
+        class="upload-list-inline">
         <a-button>
           <upload-outlined></upload-outlined>
           添加资源文件
@@ -112,14 +110,20 @@
     </a-col>
 
   </a-row>
+  <a-modal v-model:open="open" title="模版名称" @ok="saveTemplate()" width="400px" cancelText="取消" okText="创建">
+    <a-input v-model:value="tName" autofocus placeholder="请输入模版名称" />
+  </a-modal>
 </template>
 
 <script>
-import CombineWidget from '../components/widgets/CombineWidget.vue'
-import RadioWidget from '../components/widgets/RadioWidget.vue'
-import SubTitleWidget from '../components/widgets/SubTitleWidget.vue'
+import CombineWidget from '@/components/widgets/CombineWidget.vue'
+import RadioWidget from '@/components/widgets/RadioWidget.vue'
+import SubTitleWidget from '@/components/widgets/SubTitleWidget.vue'
 import TitleWidget from '@/components/widgets/TitleWidget.vue'
 import ProductWidget from '@/components/widgets/ProductWidget.vue'
+import ImageWidget from '@/components/widgets/ImageWidget.vue'
+import Image2Widget from '@/components/widgets/Image2Widget.vue'
+import Image3Widget from '@/components/widgets/Image3Widget.vue'
 import { message } from 'ant-design-vue';
 import { saveAs } from 'file-saver';
 import axios from 'axios'
@@ -132,22 +136,29 @@ export default {
     SubTitleWidget,
     TitleWidget,
     ProductWidget,
+    ImageWidget,
+    Image2Widget,
+    Image3Widget,
   },
   data() {
     return {
       widgets: [],
-      // dynamics: [],
-      // dynamicsNotes: [],
       pages: [],
       hoverIndex: null, // 用于跟踪鼠标悬浮的组件索引
       hideTimeoutId: null,
-      tName: "",
-      tId: "",
+      tName: "未命名的模版",
+      tId: this.$route.params.id,
 
       ws: XLSX.utils.aoa_to_sheet([[]]),
       urls: [],
       fileList: [],
       uploading: false,
+      open: false,
+    }
+  },
+  created() {
+    if (this.tId) {
+      this.loadTemplate(this.tId);
     }
   },
   methods: {
@@ -238,6 +249,30 @@ export default {
                 notes: ['', '', ''],
               },
           },
+          ImageWidget: {
+              type: 'Image',
+              props: {
+                src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                switchStates: [false],
+                notes: [''],
+              },
+          },
+          Image2Widget: {
+              type: 'Image2',
+              props: {
+                src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                switchStates: [false],
+                notes: [''],
+              },
+          },
+          Image3Widget: {
+              type: 'Image3',
+              props: {
+                src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                switchStates: [false],
+                notes: [''],
+              },
+          },
           RadioWidget: {
               type: 'Radio',
               props: {
@@ -299,12 +334,16 @@ export default {
 
       // 根据需要返回或使用 dynamics 和 dynamicsNotes
       axios.post('http://127.0.0.1:8088/api/templates/save', templateData).then(response => { 
-        message.success({ content: '模板保存成功', key , duration: 2});
+        message.success({ content: '模板创建成功', key , duration: 2});
         console.log('模板保存成功', response);
+        this.$router.push('/result/templatesave'); 
+        this.open = false;
       }).catch(error => {
-        message.error({ content: '模板保存失败', key , duration: 2 });
+        message.error({ content: '模板创建失败', key , duration: 2 });
         console.error('模板保存失败', error);
+        this.open = false;
       });
+
     },
     // 更新模版
     updateTemplate() {
@@ -325,24 +364,19 @@ export default {
       });
     },
     // 加载模版
-    loadTemplate() {
+    loadTemplate(id) {
       let key = 'templateLoad';
       message.loading({ content: 'Loading...', key });
-      axios.get(`http://127.0.0.1:8088/api/templates/get?id=${this.tId}`, ).then(response => {
+      axios.get(`http://127.0.0.1:8088/api/templates/get?id=${id}`, ).then(response => {
         const templateData = JSON.parse(response.data.data);
-        this.applyTemplate(templateData);
+        this.tName = response.data.name;
+        this.widgets = templateData.widgets;
         message.success({ content: '加载模版成功', key , duration: 2});
         console.log('加载模板数据成功', response);
       }).catch(error => {
         message.error({ content: '加载模版失败', key , duration: 2 });
         console.error("加载模板数据失败", error);
       });
-    },
-    // 应用模版 
-    applyTemplate(templateData) {
-      this.widgets = templateData.widgets;
-      // this.dynamics = templateData.dynamics;
-      // this.dynamicsNotes = templateData.dynamicsNotes;
     },
 
     handleFileUpload(event) {
@@ -410,18 +444,19 @@ export default {
     max-width: 450px; /* 或者使用 100vw 来确保宽度在视口宽度内 */
     min-height: 833px; /* 模拟常见的H5页面高度 */
     border: 1px solid #ccc;
-    margin: 0 auto;
-    /* overflow: hidden; */
+    margin: 15px auto;
+    overflow: hidden;
     position: relative;
-    padding-top: 10px;
+    padding: 10px 0;
     background: #fff;
-    box-shadow: 0 5px 5px rgba(71, 71, 71, 0.3);
+    /* box-shadow: 0 4px 5px rgba(71, 71, 71, 0.3); */
+    /* border-radius: 5px; */
   }
   
   
   .widget {
-    margin: 5px;
-    padding: 5px;
+    margin: 3px;
+    padding: 3px 5px;
     position: relative; 
     border: 1px solid #ccc;
   }
@@ -443,3 +478,4 @@ export default {
   }
 
 </style>
+

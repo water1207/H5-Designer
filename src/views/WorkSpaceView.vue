@@ -4,7 +4,7 @@
 			v-model:selectedKeys="selectedKeys2"
 			v-model:openKeys="openKeys"
 			mode="inline"
-			:style="{ height: '100%', borderRight: 0}"
+			:style="{ height: '100vh', borderRight: 0 }"
 		>
 			<div style="margin-top:40px"> </div>
 			<a-menu-item key="1">
@@ -101,10 +101,10 @@
 						<a-qrcode ref="qrcodeCanvasRef" :value="`http://127.0.0.1:3000/page/${record.pageId}`" size="100" />
 					</template>
 					<template v-else-if="column.key === 'action'">
-						<span>
-							<a>编辑</a>
-							<a-button type="primary" @click="dowloadChange">Downlaod</a-button>
-						</span>
+						<a-space>
+							<a-button type="primary" @click="dowloadChange">下载二维码</a-button>
+							<a-button @click="navigate(record.pageId)">编辑</a-button>
+						</a-space>
 					</template>
 				</template>
 			</a-table>
@@ -116,6 +116,12 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const navigate = (pageId) => {
+  router.push({ name: 'pagedesign', params: { id: pageId } });
+};
+
 const qrcodeCanvasRef = ref();
 const dowloadChange = async () => {
   const url = await qrcodeCanvasRef.value.toDataURL();
@@ -150,7 +156,7 @@ const columns = [
     key: 'createdAt',
   },
   {
-    title: 'Address',
+    title: '访问量',
     dataIndex: 'address',
     key: 'address',
   },

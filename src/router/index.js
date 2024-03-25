@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DesignView from '../views/DesignView.vue'
+import Home from '../views/user/Home.vue'
 import show from '../views/user/show.vue';
 
 const router = createRouter({
@@ -8,15 +8,37 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: DesignView
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
+      component: Home,
+      children:[
+        {
+          path: 'design/template/:id?',
+          name: 'design',
+          component: () => import('../views/DesignView.vue'),
+        },
+        {
+          path: 'design/page/:id?',
+          name: 'pagedesign',
+          props: true ,
+          component: () => import('../views/PageDesignView.vue'),
+        },
+        {
+          path:'test',
+          name:'test',
+          component: () => import('../views/Test.vue'),
+        },{
+          path:'workspace',
+          name:'workspace',
+          component: () => import('../views/WorkSpaceView.vue'),
+        },{
+          path:'result/pagesave',
+          name:'pageSave',
+          component: () => import('../views/result/PageSave.vue'),
+        },{
+          path:'result/templatesave',
+          name:'templateSave',
+          component: () => import('../views/result/TemplateSave.vue'),
+        }
+      ]
     },
     {
       path: '/page/:id', // :id是路由参数
@@ -24,21 +46,6 @@ const router = createRouter({
       component: show,
       props: true // 允许将路由参数作为props传递给组件
     },
-    {
-      path: '/design/page/:id?',
-      name: 'pagedesign',
-      props: true ,
-      component: () => import('../views/PageDesignView.vue'),
-    },
-    {
-      path:'/test',
-      name:'test',
-      component: () => import('../views/Test.vue'),
-    },{
-      path:'/workspace',
-      name:'workspace',
-      component: () => import('../views/WorkSpaceView.vue'),
-    }
   ]
 })
 

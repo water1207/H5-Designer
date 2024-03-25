@@ -13,30 +13,24 @@
     <a-modal :open="dialogVisible" title="编辑" @ok="save()" @cancel="handleCancel">
       <a-form :layout="vertical">
         <a-form-item label="标题">
-          <a-col :span="6" >
+          <a-space algin="center" >
               <a-switch v-model:checked="mySwitchStates[0]"></a-switch>
-          </a-col>
-          <a-col :span="11" style="margin: 0 0.1rem">
-            <a-input v-if="mySwitchStates[0]" v-model:value="myNotes[0]" placeholder="请输入标题备注"></a-input>
-          </a-col>
+              <a-input v-if="mySwitchStates[0]" v-model:value="myNotes[0]" placeholder="请输入标题备注"></a-input>
+          </a-space>
           <a-input v-model:value="myTitle" style="top: 10px;"></a-input>
         </a-form-item>
         <a-form-item label="内容">
-          <a-col :span="6" >
+          <a-space algin="center" >
               <a-switch v-model:checked="mySwitchStates[1]"></a-switch>
-          </a-col>
-          <a-col :span="11" style="margin: 0 0.1rem">
-            <a-input v-if="mySwitchStates[1]" v-model:value="myNotes[1]" placeholder="请输入内容备注"></a-input>
-          </a-col>
+              <a-input v-if="mySwitchStates[1]" v-model:value="myNotes[1]" placeholder="请输入内容备注"></a-input>
+          </a-space>
           <a-input v-model:value="myContent" style="top: 10px;"></a-input>
         </a-form-item>
         <a-form-item label="图片">
-          <a-col :span="6" >
+          <a-space algin="center">
               <a-switch v-model:checked="mySwitchStates[2]"></a-switch>
-          </a-col>
-          <a-col :span="11" style="margin: 0 0.1rem">
-            <a-input v-if="mySwitchStates[2]" v-model:value="myNotes[2]" placeholder="请输入图片备注"></a-input>
-          </a-col>
+              <a-input v-if="mySwitchStates[2]" v-model:value="myNotes[2]" placeholder="请输入图片备注"></a-input>
+          </a-space>
           <a-input v-model:value="mySrc" style="top: 10px;"></a-input>
         </a-form-item>
       </a-form>

@@ -1,4 +1,5 @@
 <template>
+<main>
   <a-affix>
   <a-page-header
     style="padding: 5px 24px; background: #fff; border: 1px solid rgb(235, 237, 240)"
@@ -9,7 +10,7 @@
         <a-tag color="blue">编辑中</a-tag>
       </template>
     <template #extra>
-        <a-button v-if="pageId == null" key="1" type="primary" @click = "open = true;" >保存并发布</a-button>
+        <a-button v-if="pageId == ''" key="1" type="primary" @click = "open = true;" >保存并发布</a-button>
         <a-button v-else key="2" type="primary" @click = "updatePage()" >更新页面</a-button>
       </template>
   </a-page-header>
@@ -17,14 +18,17 @@
   <a-row>
     <a-col :span="2"><div class="grid-content ep-bg-purple-dark" /></a-col>
     <a-col :span="6">
-      <a-affix :offset-top="220">
+      <a-affix :offset-top="160">
         <a-card title="样式库" :bordered="false" style="width: 300px">
           <a-flex :gap="10"  vertical >
           <a-button @click="addWidget('CombineWidget')">Add CombineWidget</a-button>
           <a-button @click="addWidget('RadioWidget')">Add RadioWidget</a-button>
-          <a-button @click="addWidget('SubTitleWidget')">Add TitleWithLine</a-button>
+          <a-button @click="addWidget('SubTitleWidget')">Add SubTitleWidget</a-button>
           <a-button @click="addWidget('TitleWidget')">Add TitleWidget</a-button>
           <a-button @click="addWidget('ProductWidget')">Add ProductWidget</a-button>
+          <a-button @click="addWidget('ImageWidget')">Add 弹性图片</a-button>
+          <a-button @click="addWidget('Image2Widget')">Add 16:9固定比例图片</a-button>
+          <a-button @click="addWidget('Image3Widget')">Add 与内容齐平的图片</a-button>
           </a-flex>
         </a-card>
       </a-affix>
@@ -62,26 +66,33 @@
         </div>
       </div>
     </a-col>
-    <a-col :span="7" :offset="1">
+    <a-col :span="6" :offset="1">
       <a-affix :offset-top="220">
-        <a-button type="primary">Offset top 120px</a-button><br>
-        <button @click="saveTemplate()">保存并发布</button><br>  
-        <button @click="loadTemplate()">页面加载</button><br>
-        <button @click="updateTemplate()">页面更新</button><br>
+        <a-card title="编辑历史">
+        <a-timeline>
+          <a-timeline-item v-for="item in timelines">
+            {{ item }}
+          </a-timeline-item>
+        </a-timeline>
+        </a-card>
       </a-affix>
     </a-col>
   </a-row>
   <a-modal v-model:open="open" title="页面名称" @ok="savePage()" width="400px" cancelText="取消" okText="发布">
     <a-input v-model:value="pageName" autofocus placeholder="请输入页面名称" />
   </a-modal>
+</main>
 </template>
 
 <script>
-import CombineWidget from '../components/widgets/CombineWidget.vue'
-import RadioWidget from '../components/widgets/RadioWidget.vue'
-import SubTitleWidget from '../components/widgets/SubTitleWidget.vue'
+import CombineWidget from '@/components/widgets/CombineWidget.vue'
+import RadioWidget from '@/components/widgets/RadioWidget.vue'
+import SubTitleWidget from '@/components/widgets/SubTitleWidget.vue'
 import TitleWidget from '@/components/widgets/TitleWidget.vue'
 import ProductWidget from '@/components/widgets/ProductWidget.vue'
+import ImageWidget from '@/components/widgets/ImageWidget.vue'
+import Image2Widget from '@/components/widgets/Image2Widget.vue'
+import Image3Widget from '@/components/widgets/Image3Widget.vue'
 import { message } from 'ant-design-vue';
 import { saveAs } from 'file-saver';
 import axios from 'axios'
@@ -94,6 +105,9 @@ export default {
     SubTitleWidget,
     TitleWidget,
     ProductWidget,
+    ImageWidget,
+    Image2Widget,
+    Image3Widget,
   },
   data() {
     return {
@@ -103,7 +117,8 @@ export default {
       hideTimeoutId: null,
       open: false,
       pageName: '未命名的页面',
-      pageId: this.$route.params.id
+      pageId: this.$route.params.id,
+      timelines: ['创建页面', '添加组件', '编辑组件', '发布页面']
     }
   },
   created() {
@@ -123,6 +138,30 @@ export default {
                 src:  'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false, false, false],
                 notes: ['', '', ''],
+              },
+          },
+          ImageWidget: {
+              type: 'Image',
+              props: {
+                src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                switchStates: [false],
+                notes: [''],
+              },
+          },
+          Image2Widget: {
+              type: 'Image2',
+              props: {
+                src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                switchStates: [false],
+                notes: [''],
+              },
+          },
+          Image3Widget: {
+              type: 'Image3',
+              props: {
+                src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                switchStates: [false],
+                notes: [''],
               },
           },
           RadioWidget: {
@@ -188,10 +227,15 @@ export default {
       axios.post('http://127.0.0.1:8088/api/page/create', pageData).then(response => { 
         message.success({ content: '页面发布成功', key , duration: 2});
         console.log('页面发布成功', response);
+        this.$router.push('/result/pagesave'); 
+        this.open = false;
       }).catch(error => {
         message.error({ content: '页面发布失败', key , duration: 2 });
         console.error('页面发布失败', error);
+        this.open = false;
       });
+
+
     },
     // 更新模版
     updatePage() {
@@ -209,6 +253,7 @@ export default {
       // 根据需要返回或使用 dynamics 和 dynamicsNotes
       axios.post('http://127.0.0.1:8088/api/page/update', pageData).then(response => { 
         message.success({ content: '页面更新成功', key , duration: 2});
+        this.$router.push('/result/pagesave');  
         console.log('页面更新成功', response);
       }).catch(error => {
         message.error({ content: '页面更新失败', key , duration: 2 });
@@ -303,18 +348,19 @@ export default {
     max-width: 450px; /* 或者使用 100vw 来确保宽度在视口宽度内 */
     min-height: 833px; /* 模拟常见的H5页面高度 */
     border: 1px solid #ccc;
-    margin: 0 auto;
-    /* overflow: hidden; */
+    margin: 15px auto;
+    overflow: hidden;
     position: relative;
-    padding-top: 10px;
+    padding: 10px 0;
     background: #fff;
-    box-shadow: 0 5px 5px rgba(71, 71, 71, 0.3);
+    /* box-shadow: 0 4px 5px rgba(71, 71, 71, 0.3); */
+    /* border-radius: 5px; */
   }
   
   
   .widget {
-    margin: 5px;
-    padding: 5px;
+    margin: 3px;
+    padding: 3px 5px;
     position: relative; 
     border: 1px solid #ccc;
   }
