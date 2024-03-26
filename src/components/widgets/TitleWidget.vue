@@ -3,19 +3,19 @@
     <div class="Title"
 		@mouseenter="buttonVisiable=true"
 		@mouseleave="buttonVisiable=false">
-    	<h2> {{ _title }} </h2>
+    	<h2 :style="ddstyle(0)"> {{ _title }} </h2>
 			<a-button type="primary" @click="openDialog" v-if="buttonVisiable" class="editButton">编辑</a-button>
     </div>
 
-		<a-modal :open="dialogVisible" title="编辑" @ok="save()" @cancel="handleCancel">
-			<a-flex gap="small" vertical>
-				<a-space align="center">
-					标题
-					<a-switch v-model:checked="_switchStates[0]"></a-switch>
-					<a-input v-if="_switchStates[0]" v-model:value="_notes[0]" placeholder="动态标题备注"></a-input>
-				</a-space>
-				<a-input v-model:value="_title"></a-input>
-			</a-flex>
+	<a-modal :open="dialogVisible" title="编辑" @ok="save()" @cancel="handleCancel">
+		<a-flex gap="small" vertical>
+			<a-space align="center">
+				标题
+				<a-switch v-model:checked="_switchStates[0]"></a-switch>
+				<a-input v-if="_switchStates[0]" v-model:value="_notes[0]" placeholder="动态标题备注"></a-input>
+			</a-space>
+			<a-input v-model:value="_title"></a-input>
+		</a-flex>
   	</a-modal>
 	</main>
 </template>
@@ -64,6 +64,9 @@ export default {
 		}
 	},
 	methods: {
+		ddstyle(index) {
+			return this.switchStates[index] ? { textShadow: '2px 2px 4px #337ecc' } : {};
+		},
 		save() {
 			this.$emit('update:content', {
 				content: {

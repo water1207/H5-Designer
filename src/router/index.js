@@ -26,10 +26,6 @@ const router = createRouter({
           name:'test',
           component: () => import('../views/Test.vue'),
         },{
-          path:'workspace',
-          name:'workspace',
-          component: () => import('../views/WorkSpaceView.vue'),
-        },{
           path:'result/pagesave',
           name:'pageSave',
           component: () => import('../views/result/PageSave.vue'),
@@ -37,7 +33,30 @@ const router = createRouter({
           path:'result/templatesave',
           name:'templateSave',
           component: () => import('../views/result/TemplateSave.vue'),
+        },{
+          path:'demo',
+          name:'demo',
+          component: () => import('../views/Demo2.vue'),
         }
+      ]
+    },
+    {
+      path:'/workspace',
+      name:'workspace',
+      component: () => import('../views/WorkSpace.vue'),
+      children:[{
+        path:'home',
+        name:'workspaceHome',
+        component: () => import('../views/WorkSpaceHome.vue')
+      },{
+        path:'batch',
+        name:'workspaceBatch',
+        component: () => import('../views/WorkSpaceBatch.vue')
+      },{
+        path:'page',
+        name:'workspacePage',
+        component: () => import('../views/WorkSpacePages.vue')
+      }
       ]
     },
     {

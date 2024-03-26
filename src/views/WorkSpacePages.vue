@@ -1,57 +1,8 @@
 <template>
-	<a-layout-sider width="200" style="background: #fff">
-		<a-menu
-			v-model:selectedKeys="selectedKeys2"
-			v-model:openKeys="openKeys"
-			mode="inline"
-			:style="{ height: '100vh', borderRight: 0 }"
-		>
-			<div style="margin-top:40px"> </div>
-			<a-menu-item key="1">
-				<AppstoreTwoTone />
-				<span>数据总览</span>
-			</a-menu-item>
-			<a-sub-menu key="sub1">
-				<template #title>
-					<span>
-						<user-outlined />
-						subnav 1
-					</span>
-				</template>
-				<a-menu-item key="1">option1</a-menu-item>
-				<a-menu-item key="2">option2</a-menu-item>
-				<a-menu-item key="3">option3</a-menu-item>
-				<a-menu-item key="4">option4</a-menu-item>
-			</a-sub-menu>
-			<a-sub-menu key="sub2">
-				<template #title>
-					<span>
-						<laptop-outlined />
-						subnav 2
-					</span>
-				</template>
-				<a-menu-item key="5">option5</a-menu-item>
-				<a-menu-item key="6">option6</a-menu-item>
-				<a-menu-item key="7">option7</a-menu-item>
-				<a-menu-item key="8">option8</a-menu-item>
-			</a-sub-menu>
-			<a-sub-menu key="sub3">
-				<template #title>
-					<span>
-						<notification-outlined />
-						subnav 3
-					</span>
-				</template>
-				<a-menu-item key="9">option9</a-menu-item>
-				<a-menu-item key="10">option10</a-menu-item>
-				<a-menu-item key="11">option11</a-menu-item>
-				<a-menu-item key="12">option12</a-menu-item>
-			</a-sub-menu>
-		</a-menu>
-    </a-layout-sider>
-		<a-layout-content
-			:style="{ padding: '0 80px', margin: 0, minHeight: '100vh', }"
-		>
+
+	<a-layout-content
+		:style="{ padding: '0 80px', margin: 0, minHeight: '100vh', }"
+	>
 		
 		<a-card title="页面访问量" :bordered="false" style="width: 60%; margin-top: 20px;">
 			<a-statistic
@@ -133,11 +84,6 @@ const dowloadChange = async () => {
   document.body.removeChild(a);
 };
 
-function formatDate(dateString) {
-  const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('default', options).format(date).replace(/\//g, '-').replace(',', '');
-}
 const columns = [
   {
 		title: '序号',

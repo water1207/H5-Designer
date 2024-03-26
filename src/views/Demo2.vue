@@ -1,85 +1,84 @@
 <template>
-    <div>
-      <a-upload
-      v-model:file-list="fileList"
-      :before-upload="beforeUpload" @remove="handleRemove"
-      :multiple="true"  
-      list-type="picture"
-      class="upload-list-inline">
-        <a-button>
-          <upload-outlined></upload-outlined>
-          添加资源文件
-        </a-button>
-      </a-upload>
-      <a-button
-          type="primary"
-          :disabled="fileList.length === 0"
-          :loading="uploading"
-          style="margin-top: 16px"
-          @click="handleUpload"
-        >
-          {{ uploading ? '上传中' : '上传' }}
-      </a-button>
-    </div>
-    <div>
-      <a-button @click="triggerDownload">下载 Excel 文件</a-button> 
-    </div>
+
 </template>
+
 <script>
+import axios from 'axios';
 import { message } from 'ant-design-vue';
 import { saveAs } from 'file-saver';
-import axios from 'axios'
 import * as XLSX from 'xlsx'
+
+
 export default {
   data() {
     return {
+      myImg: ['1','2'], // 初始化你的图片数组
+      fileLists: [], // 每个上传组件的文件列表
+      uploading: false,
       ws: XLSX.utils.aoa_to_sheet([[]]),
       urls: [],
-      fileList: [],
       widgets: [],
-      uploading: false
+      activeKey: ['0'], // 控制哪个折叠面板是打开的
+      pageNum: 0,
+      done: 0,
     };
   },
-  mounted() {
-    let key = 'templateLoad';
-        message.loading({ content: 'Loading...', key });
-        axios.get(`http://127.0.0.1:8088/api/templates/get?id=14`).then(response => {
-          const templateData = JSON.parse(response.data.data);
-          this.widgets = templateData.widgets;
-
-          message.success({ content: '加载模版成功', key , duration: 2});
-          console.log('加载模板数据成功', response);
-        }).catch(error => {
-          message.error({ content: '加载模版失败', key , duration: 2 });
-          console.error("加载模板数据失败", error);
-        });
+  created() {
+    this.initializeFileLists();
+    this.loadTemplate(20);
   },
   methods: {
-    handleRemove(file) {
-      const index = this.fileList.indexOf(file);
-      const newFileList = this.fileList.slice();
-      newFileList.splice(index, 1);
-      this.fileList= newFileList;
+    loadTemplate(id) {
+      let key = 'templateLoad';
+      message.loading({ content: 'Loading...', key });
+      axios.get(`http://127.0.0.1:8088/api/templates/get?id=${id}`, ).then(response => {
+        const templateData = JSON.parse(response.data.data);
+        this.tName = response.data.name;
+        this.widgets = templateData.widgets;
+        message.success({ content: '加载模版成功', key , duration: 2});
+        console.log('加载模板数据成功', response);
+      }).catch(error => {
+        message.error({ content: '加载模版失败', key , duration: 2 });
+        console.error("加载模板数据失败", error);
+      });
     },
-    beforeUpload(file) {
-      this.fileList = [...this.fileList, file];
-      console.log(this.fileList)
-      return false;
+    initializeFileLists() {
+      this.fileLists = this.myImg.map(() => []);
     },
-    handleUpload()  {
+    handleRemove(file, index) {
+      const newFileList = this.fileLists[index].slice();
+      const fileIndex = newFileList.indexOf(file);
+      if (fileIndex > -1) {
+        newFileList.splice(fileIndex, 1);
+        this.fileLists[index] = newFileList;
+      }
+    },
+    beforeUpload(file, index) {
+      this.fileLists[index] = [...this.fileLists[index], file];
+      console.log(this.fileLists[index]);
+      return false; // 阻止自动上传
+    },
+    handleUpload(index) {
       const formData = new FormData();
-      this.fileList.forEach(file => {
-        formData.append('files[]', file.originFileObj);
+      this.fileLists[index].forEach(file => {
+        formData.append('files[]', file);
       });
       this.uploading = true;
-      axios.post('http://127.0.0.1:8088/api/file/upload', formData).then(res => {
+      axios.post('http://127.0.0.1:8088/api/file/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }).then(res => {
         this.uploading = false;
-        this.urls = res.data;
-        message.success('upload successfully'+this.urls);
+        // 根据需要处理响应
+        this.urls[index] = res.data;
+        console.log('urls',this.urls.length);
+        console.log('myImg',this.myImg.length);
+        message.success('上传成功');
       }).catch(err => {
         this.uploading = false;
-        message.error('upload failed');
-      })
+        message.error('上传失败');
+      });
     },
     generateWorksheetFromData(data, columnNumber) {
       data.forEach((value, index) => {
@@ -99,9 +98,8 @@ export default {
       dynamics.forEach((value) => {
         if (value == true) {
           let i = index;
-          if(dynamicsNotes[i-1] == 'iiimage') {
-            console.log('hhh '+ sourceData[sourceIndex])
-            this.generateWorksheetFromData(sourceData[sourceIndex], index);
+          if(dynamicsNotes[i-1] == ('image'+ (sourceIndex+1).toString())) {
+            this.generateWorksheetFromData(sourceData[sourceIndex++], index);
           }
           const cellRef = XLSX.utils.encode_cell({ r: 0, c: index++ }); // 第一行，不同列
           XLSX.utils.sheet_add_aoa(this.ws, [[ i+ '. ' +dynamicsNotes[i-1]]], { origin: cellRef });
@@ -110,7 +108,7 @@ export default {
     },
     downloadExcel() {
       const wb = XLSX.utils.book_new();
-      this.preExcelData([['A','B','C'],[]]);
+      this.preExcelData(this.urls);
 
       XLSX.utils.book_append_sheet(wb, this.ws, 'Sheet1');
       const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
@@ -127,6 +125,16 @@ export default {
     triggerDownload() {
       this.downloadExcel();
     },
-  }
-}
+  },
+};
 </script>
+<style scoped>
+.upload-list-inline :deep(.ant-upload-list-item) {
+  float: left;
+  width: 200px;
+  margin-right: 8px;
+}
+.upload-list-inline [class*='-upload-list-rtl'] :deep(.ant-upload-list-item) {
+  float: right;
+}
+</style>

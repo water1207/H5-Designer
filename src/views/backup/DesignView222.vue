@@ -1,7 +1,5 @@
 <template>
-  <a-modal v-model:open="open2" title="批次名称" @ok="submitExcel()" width="400px" cancelText="取消" okText="开始导出">
-    <a-input v-model:value="batchName" autofocus placeholder="请输入批次名称" />
-  </a-modal>
+  <main>
   <a-affix>
   <a-page-header
     style="padding: 5px 24px; background: #fff; border: 1px solid rgb(235, 237, 240)"
@@ -68,48 +66,50 @@
         </div>
       </div>
     </a-col>
-    <a-col :span="6" :offset="1">
-        <div>
-        <a-space align="center">
-        批量页面数量: 
-        <a-input-number id="inputNumber" v-model:value="pageNum" :min="1" :max="10" />
-        </a-space>
-        <!-- 动态渲染上传组件 -->
-        <input type="file" @change="handleFileUpload" />
-        <a-button type="primary" @click="open2 = true">导出</a-button>
-        <a-button @click="triggerDownload" :disabled="urls.length != mySrc.length">下载 Excel 文件</a-button>
-        <a-collapse v-model:activeKey="activeKey" style="width: 350px;">
-          <a-collapse-panel v-for="(img, index) in mySrc" :key="index" :header="`动态图片资源 image ${index + 1}`">
-            <template #extra>
-              <a-button
-                type="primary"
-                :disabled="fileLists[index].length != pageNum"
-                :loading="uploading"  
-                @click="() => handleUpload(index)">
-                {{ uploading ? '上传中' : '上传' }}
-              </a-button>
-            </template>
-            <a-upload
-              :file-list="fileLists[index]"
-              :before-upload="(file) => beforeUpload(file, index)"
-              @remove="(file) => handleRemove(file, index)"
-              :multiple="true"
-              list-type="picture"
-              class="upload-list-inline">
-              <a-button>
-                <a-icon type="upload" /> 添加资源文件
-              </a-button>
-            </a-upload>
+    <a-col :span="7" :offset="1">
+      <a-timeline>
+        <template v-for="(note, index) in myNotes" :key="index">
+          <a-timeline-item v-if="note.startsWith('image')">
+            <a-space align="center">
+              {{ note }}
+            </a-space>
+          </a-timeline-item>
+          <a-timeline-item v-else>
+            {{ note }}
+          </a-timeline-item>
+        </template>
+      </a-timeline>
+      <a-upload
+        v-model:file-list="fileList"
+        :before-upload="beforeUpload()" @remove="handleRemove"
+        :multiple="true"  
+        list-type="picture"
+        class="upload-list-inline">
+        <a-button>
+          <upload-outlined></upload-outlined>
+          添加资源文件
+        </a-button>
+      </a-upload>
+      <a-button
+          type="primary"
+          :disabled="fileList.length === 0"
+          :loading="uploading"
+          style="margin-top: 16px"
+          @click="handleUpload"
+        >
+          {{ uploading ? '上传中' : '上传' }}
+      </a-button>
 
-          </a-collapse-panel>
-        </a-collapse> 
-      </div>
+    <div>
+      <a-button @click="triggerDownload">下载 Excel 文件</a-button> 
+    </div>
     </a-col>
 
   </a-row>
   <a-modal v-model:open="open" title="模版名称" @ok="saveTemplate()" width="400px" cancelText="取消" okText="创建">
     <a-input v-model:value="tName" autofocus placeholder="请输入模版名称" />
   </a-modal>
+</main>
 </template>
 
 <script>
@@ -148,14 +148,13 @@ export default {
 
       ws: XLSX.utils.aoa_to_sheet([[]]),
       urls: [],
-      pageNum: 1,
-      fileLists: [],
+      fileList: [],
       uploading: false,
       open: false,
+      myNotes: [],
+      imageCounter: 0,   //图片个数
       mySrc: [],
-      open2: false, //batchName输入框的弹出层
-      batchName: '自定义批次',  
-      activeKey: ['0'],
+      activeKey: ['0'], 
     }
   },
   created() {
@@ -164,10 +163,89 @@ export default {
     }
   },
   methods: {
+    processWidgets() {
+      this.myNotes = [];
+      this.imageCounter = 1; // 用于动态图片计数
 
+      this.widgets.forEach(widget => {
+        const propKeys = Object.keys(widget.props).filter(key => !['switchStates', 'notes'].includes(key));
+        widget.props.switchStates.forEach((state, index) => {
+          if (state && propKeys[index] === 'src') {
+            // 是动态图片
+            let noteLabel = `image${this.imageCounter}`; // 生成动态图片的标签
+            widget.props.notes[index] = noteLabel; // 更新原数组中的note为编号形式
+            this.myNotes.push(noteLabel); // 添加到myNotes数组中
+            this.mySrc.push(noteLabel);
+            this.imageCounter++;
+          } else if (state) {
+            // 不是动态图片但switchStates为true
+            this.myNotes.push(widget.props.notes[index]); // 直接添加到myNotes数组中
+          }
+        });
+      });
+
+      // this.myNotes.forEach((note, index) => {
+      //   this.fileLists.push([]);
+      // });
+    },
+    // panel2
+    handleRemove(file) {
+      const index = this.fileList.indexOf(file);
+      const newFileList = this.fileList.slice();
+      newFileList.splice(index, 1);
+      this.fileList= newFileList;
+    },
+    beforeUpload(file) {
+      console.log(file)
+      this.fileList = [...this.fileList, file];
+      console.log(this.fileList)
+      return false;
+    },
+    handleUpload()  {
+      const formData = new FormData();
+      this.fileList.forEach(file => {
+        formData.append('files[]', file.originFileObj);
+      });
+      this.uploading = true;
+      axios.post('http://127.0.0.1:8088/api/file/upload', formData).then(res => {
+        this.uploading = false;
+        this.urls = res.data;
+        message.success('upload successfully'+this.urls);
+      }).catch(err => {
+        this.uploading = false;
+        message.error('upload failed');
+      })
+    },
+    generateWorksheetFromData(data, columnNumber) {
+      data.forEach((value, index) => {
+        const cellRef = XLSX.utils.encode_cell({ r: index+1, c: columnNumber });
+        XLSX.utils.sheet_add_aoa(this.ws, [[value]], { origin: cellRef });
+      });
+    },
+    preExcelData(sourceData) {
+      const dynamics = this.widgets.flatMap(item => item.props.switchStates);
+      const dynamicsNotes = this.widgets.reduce((notesAccumulator, item) => {
+      const notesForWidget = item.props.notes.filter((note, index) => item.props.switchStates[index]);
+        return notesAccumulator.concat(notesForWidget);
+      }, []);
+      let index = 1;
+      let sourceIndex = 0;
+      console.log(dynamics)
+      dynamics.forEach((value) => {
+        if (value == true) {
+          let i = index;
+          if(dynamicsNotes[i-1] == 'iiimage') {
+            console.log('hhh '+ sourceData[sourceIndex])
+            this.generateWorksheetFromData(sourceData[sourceIndex], index);
+          }
+          const cellRef = XLSX.utils.encode_cell({ r: 0, c: index++ }); // 第一行，不同列
+          XLSX.utils.sheet_add_aoa(this.ws, [[ i+ '. ' +dynamicsNotes[i-1]]], { origin: cellRef });
+        }
+      });
+    },
     downloadExcel() {
       const wb = XLSX.utils.book_new();
-      this.preExcelData(this.urls);
+      this.preExcelData([this.urls,[]]);
 
       XLSX.utils.book_append_sheet(wb, this.ws, 'Sheet1');
       const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
@@ -195,7 +273,7 @@ export default {
                 content: '默认描述',
                 src:  'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false, false, false],
-                notes: ['', '', ''],
+                notes: ['', '', 'iiimage'],
               },
           },
           ImageWidget: {
@@ -203,7 +281,7 @@ export default {
               props: {
                 src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false],
-                notes: [''],
+                notes: ['iiimage'],
               },
           },
           Image2Widget: {
@@ -211,7 +289,7 @@ export default {
               props: {
                 src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false],
-                notes: [''],
+                notes: ['iiimage'],
               },
           },
           Image3Widget: {
@@ -219,7 +297,7 @@ export default {
               props: {
                 src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false],
-                notes: [''],
+                notes: ['iiimage'],
               },
           },
           RadioWidget: {
@@ -270,6 +348,7 @@ export default {
         },
       };
     },
+    // 保存并创建模版
     saveTemplate() {
       let key = 'templateSave';
       message.loading({ content: 'Loading...', key });
@@ -331,20 +410,18 @@ export default {
     handleFileUpload(event) {
       this.file = event.target.files[0];
     },
-    submitExcel() {
+    submitFile() {
       const formData = new FormData();
       formData.append('file', this.file);
-      formData.append('tId', this.tId);
-      formData.append('batchName', this.batchName);
+
       axios.post('http://127.0.0.1:8088/api/page/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       })
       .then(response => {
-        const pageData = JSON.parse(response.data.content);
-        this.widgets = pageData.widgets
-        console.log('上传successfully', response.data);
+        this.widgets = response.data;
+        console.log('上传successfully', response);
       })
       .catch(error => {
         console.error('Error uploading file', error);
@@ -371,97 +448,12 @@ export default {
         this.widgets.splice(index + 1, 0, itemToMove);
       }
     },
-    initializeFileLists() {
-      this.myNotes = [];
-      this.mySrc = [];
-      this.imageCounter = 1; // 用于动态图片计数
-
-      this.widgets.forEach(widget => {
-        const propKeys = Object.keys(widget.props).filter(key => !['switchStates', 'notes'].includes(key));
-        widget.props.switchStates.forEach((state, index) => {
-          if (state && propKeys[index] === 'src') {
-            // 是动态图片
-            let noteLabel = `image${this.imageCounter}`; // 生成动态图片的标签
-            widget.props.notes[index] = noteLabel; // 更新原数组中的note为编号形式
-            this.myNotes.push(noteLabel); // 添加到myNotes数组中
-            this.mySrc.push(noteLabel);
-            this.imageCounter++;
-          } else if (state) {
-            // 不是动态图片但switchStates为true
-            this.myNotes.push(widget.props.notes[index]); // 直接添加到myNotes数组中
-          }
-        });
-      });
-      this.fileLists = this.mySrc.map(() => []);
-    },
-    handleRemove(file, index) {
-      const newFileList = this.fileLists[index].slice();
-      const fileIndex = newFileList.indexOf(file);
-      if (fileIndex > -1) {
-        newFileList.splice(fileIndex, 1);
-        this.fileLists[index] = newFileList;
-      }
-    },
-    beforeUpload(file, index) {
-      this.fileLists[index] = [...this.fileLists[index], file];
-      console.log(this.fileLists[index]);
-      return false; // 阻止自动上传
-    },
-    handleUpload(index) {
-      const formData = new FormData();
-      this.fileLists[index].forEach(file => {
-        formData.append('files[]', file);
-      });
-      this.uploading = true;
-      axios.post('http://127.0.0.1:8088/api/file/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }).then(res => {
-        this.uploading = false;
-        // 根据需要处理响应
-        this.urls[index] = res.data;
-        console.log('urls',this.urls.length);
-        message.success('上传成功');
-      }).catch(err => {
-        this.uploading = false;
-        console.log('上传失败',err);
-        message.error('上传失败');
-      });
-    },
-    generateWorksheetFromData(data, columnNumber) {
-      data.forEach((value, index) => {
-        const cellRef = XLSX.utils.encode_cell({ r: index+1, c: columnNumber });
-        XLSX.utils.sheet_add_aoa(this.ws, [[value]], { origin: cellRef });
-      });
-    },
-    preExcelData(sourceData) {
-      const dynamics = this.widgets.flatMap(item => item.props.switchStates);
-      const dynamicsNotes = this.widgets.reduce((notesAccumulator, item) => {
-      const notesForWidget = item.props.notes.filter((note, index) => item.props.switchStates[index]);
-        return notesAccumulator.concat(notesForWidget);
-      }, []);
-      let index = 1;
-      let sourceIndex = 0;
-      console.log(dynamics)
-      dynamics.forEach((value) => {
-        if (value == true) {
-          let i = index;
-          if(dynamicsNotes[i-1] == ('image'+ (sourceIndex+1).toString())) {
-            this.generateWorksheetFromData(sourceData[sourceIndex++], index);
-          }
-          const cellRef = XLSX.utils.encode_cell({ r: 0, c: index++ }); // 第一行，不同列
-          XLSX.utils.sheet_add_aoa(this.ws, [[ i+ '. ' +dynamicsNotes[i-1]]], { origin: cellRef });
-        }
-      });
-    },
-
   },
   watch: {
     widgets: {
       deep: true,
       handler() {
-        this.initializeFileLists(); // 当widgets变化时重新处理
+        this.processWidgets(); // 当widgets变化时重新处理
       }
     }
   },
@@ -506,5 +498,6 @@ export default {
       margin-left: 0px;
     }
   }
-  
+
 </style>
+

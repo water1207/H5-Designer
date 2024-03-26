@@ -68,9 +68,14 @@
   }
 }
 
-.Radio h4 {
-	line-height: 3;
-	margin: 0 0;
+.Radio {
+  margin: 0 0;
+  padding:0 5%;
+
+  h4 {
+    line-height: 3;
+    margin: 0 0;
+  }
 }
 
 .Combine {

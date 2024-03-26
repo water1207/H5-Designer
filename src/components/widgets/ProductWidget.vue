@@ -3,11 +3,11 @@
 		<div class="Product"
 		@mouseenter="buttonVisiable=true"
 		@mouseleave="buttonVisiable=false">
-			<p style="font-weight: 500">名称</p>
-			<p style="white-space: pre-wrap;">{{ _name }}</p>
+			<p style="font-weight: 500" >名称</p>
+			<p :style="ddstyle(0)" style="white-space: pre-wrap;">{{ _name }}</p>
 			<div class="line-container"></div>
 			<p style="font-weight: 500">介绍</p>
-			<p style="white-space: pre-wrap;">{{ _desc }}</p>  
+			<p :style="ddstyle(1)" style="white-space: pre-wrap;">{{ _desc }}</p>  
 			<a-button type="primary" @click="openDialog" v-if="buttonVisiable" class="editButton">编辑</a-button>
 		</div>
 
@@ -75,6 +75,9 @@ export default {
 		}
 	},
 	methods: {
+		ddstyle(index) {
+			return this.switchStates[index] ? { textShadow: '2px 2px 4px #337ecc' } : {};
+		},
 		save() {
 			this.$emit('update:content', {
 				content: {

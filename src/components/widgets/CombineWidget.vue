@@ -94,7 +94,6 @@
     },
     methods: {
       ddstyle(index) {
-      // 根据 switchStates 中对应 index 的值来决定是否添加阴影
         return this.switchStates[index] ? { textShadow: '2px 2px 4px #337ecc' } : {};
       },
       openDialog() {
