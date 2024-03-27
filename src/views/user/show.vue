@@ -14,13 +14,14 @@
   </template>
   
   <script>
-  import CombineWidget from '@/components/widgets/CombineWidget.vue';
-  import RadioWidget from '@/components/widgets/RadioWidget.vue';
-  import SubTitleWidget from '@/components/widgets/SubTitleWidget.vue';
-  import TitleWidget from '@/components/widgets/TitleWidget.vue';
-  import ProductWidget from '@/components/widgets/ProductWidget.vue';
-  import ImageWidget from '@/components/widgets/ImageWidget.vue';
-  import Image2Widget from '@/components/widgets/Image2Widget.vue';
+  import CombineWidget from '@/components/widgets/CombineWidget.vue'
+  import RadioWidget from '@/components/widgets/RadioWidget.vue'
+  import SubTitleWidget from '@/components/widgets/SubTitleWidget.vue'
+  import TitleWidget from '@/components/widgets/TitleWidget.vue'
+  import ProductWidget from '@/components/widgets/ProductWidget.vue'
+  import ImageWidget from '@/components/widgets/ImageWidget.vue'
+  import Image2Widget from '@/components/widgets/Image2Widget.vue'
+  import Image3Widget from '@/components/widgets/Image3Widget.vue'
   import axios from 'axios'
 
   export default {
@@ -31,7 +32,8 @@
       TitleWidget,
       ProductWidget,
       ImageWidget,
-      Image2Widget
+      Image2Widget,
+      Image3Widget
     },
     data() {
       return {
@@ -43,7 +45,7 @@
     methods: {
       loadPage(id) {
         let key = 'init';
-        axios.get(`http://192.168.31.43:8088/api/page/get?id=${id}`, ).then(response => {
+        axios.get(`http://124.222.242.75:8088/api/page/get?id=${id}`, ).then(response => {
           const pageData = JSON.parse(response.data.content);
           this.widgets = pageData.widgets
           this.pageName = response.data.name
@@ -81,8 +83,8 @@
   .canvas2 {
     max-width: 450px; /* 或者使用 100vw 来确保宽度在视口宽度内 */
     min-height: 833px; /* 模拟常见的H5页面高度 */
-    border: 1px solid #ccc;
-    margin: 15px auto;
+    /* border: 1px solid #ccc; */
+    margin: 0 auto;
     overflow: hidden;
     position: relative;
     padding: 10px 0;

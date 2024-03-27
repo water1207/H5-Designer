@@ -80,7 +80,7 @@ const navigate = (tId) => {
   router.push({ name: 'design', params: { id: tId } });
 };
 async function handleDel(tId) {
-  axios.get("http:/127.0.0.1:8088/api/templates/delete?id=" + tId).then((res) => {
+  axios.get("http:/124.222.242.75:8088/api/templates/delete?id=" + tId).then((res) => {
 	console.log(res);
 	message.success('删除成功', 1.5);
 	fetchData();
@@ -137,7 +137,7 @@ const columns = [
 const data = ref(null)
 async function fetchData() {
   try {
-    const response = await axios.get('http://127.0.0.1:8088/api/templates/getAll');
+    const response = await axios.get('http://124.222.242.75:8088/api/templates/getAll');
     data.value = response.data; // 将响应数据赋值给 myData
   } catch (error) {
     console.error('请求失败:', error);

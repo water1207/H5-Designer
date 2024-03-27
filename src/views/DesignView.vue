@@ -286,7 +286,7 @@ export default {
       };
 
       // 根据需要返回或使用 dynamics 和 dynamicsNotes
-      axios.post('http://127.0.0.1:8088/api/templates/save', templateData).then(response => { 
+      axios.post('http://124.222.242.75:8088/api/templates/save', templateData).then(response => { 
         message.success({ content: '模板创建成功', key , duration: 2});
         console.log('模板保存成功', response);
         this.$router.push('/result/templatesave'); 
@@ -308,7 +308,7 @@ export default {
         data: JSON.stringify({widgets: this.widgets, dynamics: this.dynamics, dynamicsNotes: this.dynamicsNotes}),
       };
 
-      axios.post('http://127.0.0.1:8088/api/templates/update', templateData).then(response => {
+      axios.post('http://124.222.242.75:8088/api/templates/update', templateData).then(response => {
         message.success({ content: '模板更新成功', key , duration: 2});
         this.$router.push('/result/templatesave');  
         console.log('模板更新成功', response);
@@ -321,7 +321,7 @@ export default {
     loadTemplate(id) {
       let key = 'templateLoad';
       message.loading({ content: 'Loading...', key });
-      axios.get(`http://127.0.0.1:8088/api/templates/get?id=${id}`, ).then(response => {
+      axios.get(`http://124.222.242.75:8088/api/templates/get?id=${id}`, ).then(response => {
         const templateData = JSON.parse(response.data.data);
         this.tName = response.data.name;
         this.widgets = templateData.widgets;
@@ -341,7 +341,7 @@ export default {
       formData.append('file', this.file);
       formData.append('tId', this.tId);
       formData.append('batchName', this.batchName);
-      axios.post('http://127.0.0.1:8088/api/page/upload', formData, {
+      axios.post('http://124.222.242.75:8088/api/page/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -419,7 +419,7 @@ export default {
         formData.append('files[]', file);
       });
       this.uploading = true;
-      axios.post('http://127.0.0.1:8088/api/file/upload', formData, {
+      axios.post('http://124.222.242.75:8088/api/file/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
