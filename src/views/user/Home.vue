@@ -7,6 +7,7 @@
             theme="light"
             mode="horizontal"
             :style="{ lineHeight: '63px' , display:'block', fontSize: '16px' ,width: '100%'}"
+            @click="headerClick"
           >
             <a-menu-item key="1" >
               <a-flex align="center">
@@ -16,9 +17,9 @@
                 H5 Designer for K.o.
               </a-flex>
             </a-menu-item>
-            <a-menu-item key="2" :style="{float:'right'}">nav 2</a-menu-item>
-            <a-menu-item key="3" :style="{float:'right'}">nav 3</a-menu-item>
-            <a-menu-item key="4" :style="{float:'right'}">nav 3</a-menu-item>
+            <a-menu-item key="workspaceHome" :style="{float:'right'}">工作台</a-menu-item>
+            <a-menu-item key="pagedesign" :style="{float:'right'}">页面设计</a-menu-item>
+            <a-menu-item key="design" :style="{float:'right'}">模版构建</a-menu-item>
         </a-menu>
       </a-layout-header>
       <a-layout>
@@ -29,6 +30,15 @@
   
   <script setup>
   import {ExperimentTwoTone} from '@ant-design/icons-vue'
+  import { useRouter } from 'vue-router';
+  import { ref } from 'vue';
+  const router = useRouter();
+  const selectedKeys = ref(['1']);
+  const headerClick = (item) => {
+    console.log(item.key);
+    selectedKeys.value = [item.key];
+    router.push({ name: item.key });
+  };
   </script>
   
   <style scoped>

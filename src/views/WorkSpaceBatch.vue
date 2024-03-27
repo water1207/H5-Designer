@@ -2,7 +2,7 @@
 	<a-layout-content
 		:style="{ padding: '0 80px', margin: 0, minHeight: '100vh', }"
 	>
-  <a-flex gap="middle" vertical>
+  <a-flex gap="middle" vertical style="margin-top: 20px">
   <a-card v-for="batch in batches" :key="batch.batchId" class="batch-container" style="">
     <div class="batch-header" style="margin-bottom: 15px;">
       <h3>{{ batch.name }}</h3>
@@ -33,7 +33,7 @@
 						{{ dayjs(record.createdAt).format('YYYY/MM/DD HH:mm:ss') }}
 					</template>
 					<template v-else-if="column.key === 'qrcode'">
-						<a-qrcode ref="setQrcodeRef(record.pageId)" :value="`http://127.0.0.1:3000/page/${record.pageId}`" size=100 />
+						<a-qrcode ref="qrcodeCanvasRef" :value="`http://127.0.0.1:3000/page/${record.pageId}`" :size=100 />
 					</template>
 					<template v-else-if="column.key === 'action'">
 						<a-space>
@@ -43,7 +43,6 @@
 					</template>
 				</template>
 			</a-table>
-    
   </a-card>
 </a-flex>
 	</a-layout-content>
@@ -59,26 +58,17 @@ const navigate = (pageId) => {
   router.push({ name: 'pagedesign', params: { id: pageId } });
 };
 
-const qrcodeRefs = reactive({});
-const setQrcodeRef = (pageId) => (el) => {
-  if (el) {
-    qrcodeRefs[pageId] = el;
-  }
-};
-const dowloadChange = async (pageId) => {
-
-  if (!qrcodeRefs[pageId]) return;
-  const qrcodeElement = qrcodeRefs[pageId].$el.querySelector('canvas'); // Assuming a-qrcode renders a canvas
-  if (!qrcodeElement) return;
-  
-  const url = qrcodeElement.toDataURL();
+const qrcodeCanvasRef = ref();
+const dowloadChange = async () => {
+  const url = await qrcodeCanvasRef.value.toDataURL();
   const a = document.createElement('a');
-  a.download = `QRCode-${pageId}.png`;
+  a.download = 'QRCode.png';
   a.href = url;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
 };
+
 
 const batches = ref([]);
 

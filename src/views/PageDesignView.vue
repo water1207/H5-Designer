@@ -137,7 +137,7 @@ export default {
                 content: '默认描述',
                 src:  'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false, false, false],
-                notes: ['', '', ''],
+                notes: ['动态标题', '动态描述', ''],
               },
           },
           ImageWidget: {
@@ -145,7 +145,7 @@ export default {
               props: {
                 src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false],
-                notes: [''],
+                notes: ['弹性图片-资源'],
               },
           },
           Image2Widget: {
@@ -153,7 +153,7 @@ export default {
               props: {
                 src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false],
-                notes: [''],
+                notes: ['固定比例图片-资源'],
               },
           },
           Image3Widget: {
@@ -161,7 +161,7 @@ export default {
               props: {
                 src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false],
-                notes: [''],
+                notes: ['齐平图片-资源'],
               },
           },
           RadioWidget: {
@@ -170,7 +170,7 @@ export default {
                 title: '默认标题',
                 src:  'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false, false],
-                notes: ['', '', ''],
+                notes: ['音频组件-标题', '', ''],
               },
           },
           SubTitleWidget: {
@@ -178,7 +178,7 @@ export default {
               props: {
                 title: '默认标题',
                 switchStates: [false],
-                notes: [''],
+                notes: ['子标题'],
               },
           },
           TitleWidget: {
@@ -186,7 +186,7 @@ export default {
               props: {
                 title: '默认标题',
                 switchStates: [false],
-                notes: [''],
+                notes: ['标题'],
               },
           },
           ProductWidget: {
@@ -195,7 +195,7 @@ export default {
                 name: '默认名称',
                 desc: '默认描述',
                 switchStates: [false, false],
-                notes: ['', ''],
+                notes: ['产品-名称', '产品-描述'],
               },
           },
           // 可以添加其他类型组件的默认属性

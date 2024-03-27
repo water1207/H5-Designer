@@ -1,5 +1,4 @@
 <template>
-
 	<a-layout-content
 		:style="{ padding: '0 80px', margin: 0, minHeight: '100vh', }"
 	>
@@ -33,15 +32,12 @@
 					<template v-if="column.key === 'name'">
 							{{ record.name }}
 					</template>
+          <template v-else-if="column.key === 'usage'">
+                ---
+					</template>
 					<template v-else-if="column.key === 'tags'">
 						<span>
-							<a-tag
-								v-for="tag in record.tags"
-								:key="tag"
-								:color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
-							>
-								{{ tag.toUpperCase() }}
-							</a-tag>
+              <a-tag color="success">success</a-tag>
 						</span>
 					</template>
 					<template v-else-if="column.key === 'createdAt'">
@@ -103,8 +99,8 @@ const columns = [
   },
   {
     title: '访问量',
-    dataIndex: 'address',
-    key: 'address',
+    dataIndex: 'usage',
+    key: 'usage',
   },
   {
     title: 'Tags',

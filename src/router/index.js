@@ -7,16 +7,21 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      name: 'index',
+      redirect: '/workspace/home'
+    },
+    {
+      path: '/design',
       name: 'home',
       component: Home,
       children:[
         {
-          path: 'design/template/:id?',
+          path: 'template/:id?',
           name: 'design',
           component: () => import('../views/DesignView.vue'),
         },
         {
-          path: 'design/page/:id?',
+          path: 'page/:id?',
           name: 'pagedesign',
           props: true ,
           component: () => import('../views/PageDesignView.vue'),
@@ -25,14 +30,6 @@ const router = createRouter({
           path:'test',
           name:'test',
           component: () => import('../views/Test.vue'),
-        },{
-          path:'result/pagesave',
-          name:'pageSave',
-          component: () => import('../views/result/PageSave.vue'),
-        },{
-          path:'result/templatesave',
-          name:'templateSave',
-          component: () => import('../views/result/TemplateSave.vue'),
         },{
           path:'demo',
           name:'demo',
@@ -65,6 +62,24 @@ const router = createRouter({
       component: show,
       props: true // 允许将路由参数作为props传递给组件
     },
+    {
+      path:'/result',
+      name:'result',
+      component: Home,
+      children:[{
+        path:'pagesave',
+        name:'pageSave',
+        component: () => import('../views/result/PageSave.vue'),
+      },{
+        path:'templatesave',
+        name:'templateSave',
+        component: () => import('../views/result/TemplateSave.vue'),
+      },{
+        path: 'templateExport',
+        name: 'templateExport',
+        component: () => import('../views/result/TemplateExport.vue'),
+      }]
+    }
   ]
 })
 

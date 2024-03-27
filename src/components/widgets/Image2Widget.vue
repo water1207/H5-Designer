@@ -81,9 +81,9 @@ export default {
 	methods: {
 		change(){
 			if(this._switchStates[0]){
-				this._src = "https://designer-1303826627.cos.ap-shanghai.myqcloud.com/dt.jpg?q-sign-algorithm=sha1&q-ak=AKIDPk1Litry51whI2JRFtGQA5fPexyEjD87VK95r5bxXWwuR5-ecIhRwsPBRUlmdKOr&q-sign-time=1711459394;1711462994&q-key-time=1711459394;1711462994&q-header-list=host&q-url-param-list=ci-process&q-signature=c19050590113a3be0c9a75af632ffe6174b340e4&x-cos-security-token=okfUBNIFjSzImAE3s7cK7D1LdMLgEoma9c15f180ef4c9f5819339c5ca2629b5d7_h8VVcc_btKcmoTJq3PqDVqZualn7hmOvyZVFqxkqQwT4n0tJFmhNkm0s7VBqNwuSKkgFKzadvONMW7Ky4SG996eQMoS6HslfGy2O_EZptiNrVKilsZsPiUJMMbDBmu9NJXjWBHUoAdK3hHclIn__bLN_nVDtceS3SLO6tghG3nUm4nRMCl08UNUGhQkscwreIJ5e2c9yE4eo7vknb74w&ci-process=originImage"
+				this._src = "https://designer-1303826627.cos.ap-shanghai.myqcloud.com/dt.jpg"
 			}else{
-				this._src = "https://designer-1303826627.cos.ap-shanghai.myqcloud.com/empty.jpg?q-sign-algorithm=sha1&q-ak=AKIDErhpKFA2AHoDrq_-pgZeZRnGnZYM-mgJ6GGsIcmqWbVmO6JDucyMHC13NT7WoGey&q-sign-time=1711459761;1711463361&q-key-time=1711459761;1711463361&q-header-list=host&q-url-param-list=ci-process&q-signature=9bd20f85be388464a24d24260fa672cfad8010bb&x-cos-security-token=okfUBNIFjSzImAE3s7cK7D1LdMLgEomaa11ef7ae0acac6dd1cee233aa766fcec7_h8VVcc_btKcmoTJq3PqGxNES3aJpvQYGbvyXA7001-bDuABxc4RrqZm5aIHg1cEqGwOVX2kDrDjnUGe6wMKpOaYmw-ojYnrS1-NFmS6At_rvWQivIJ9lTbMR6_8JfawUdD3VD5PekRY1iK59XwI8Ly_csQ2mKyUhX1euw6Nm-a6FZuTWKMP0wzLRtRf9c5a--waYy_wTTr1u47ja7BlQ&ci-process=originImage"
+				this._src = "https://designer-1303826627.cos.ap-shanghai.myqcloud.com/empty.jpg"
 			}
 		},
 		customUpload(file) {

@@ -23,14 +23,14 @@
       <a-affix :offset-top="160">
         <a-card title="样式库" :bordered="false" style="width: 300px">
           <a-flex :gap="10"  vertical >
-          <a-button @click="addWidget('CombineWidget')">Add CombineWidget</a-button>
-          <a-button @click="addWidget('RadioWidget')">Add RadioWidget</a-button>
-          <a-button @click="addWidget('SubTitleWidget')">Add SubTitleWidget</a-button>
-          <a-button @click="addWidget('TitleWidget')">Add TitleWidget</a-button>
-          <a-button @click="addWidget('ProductWidget')">Add ProductWidget</a-button>
+          <a-button @click="addWidget('TitleWidget')">Add 标题</a-button>
+          <a-button @click="addWidget('SubTitleWidget')">Add 子标题</a-button>
+          <a-button @click="addWidget('ProductWidget')">Add 产品描述</a-button>
           <a-button @click="addWidget('ImageWidget')">Add 弹性图片</a-button>
           <a-button @click="addWidget('Image2Widget')">Add 16:9固定比例图片</a-button>
           <a-button @click="addWidget('Image3Widget')">Add 与内容齐平的图片</a-button>
+          <a-button @click="addWidget('CombineWidget')">Add 测试组件</a-button>
+          <a-button @click="addWidget('RadioWidget')">Add 音频组件</a-button>
           </a-flex>
         </a-card>
       </a-affix>
@@ -69,15 +69,18 @@
       </div>
     </a-col>
     <a-col :span="6" :offset="1">
-        <div>
-        <a-space align="center">
-        批量页面数量: 
-        <a-input-number id="inputNumber" v-model:value="pageNum" :min="1" :max="10" />
-        </a-space>
-        <!-- 动态渲染上传组件 -->
-        <input type="file" @change="handleFileUpload" />
-        <a-button type="primary" @click="open2 = true">导出</a-button>
-        <a-button @click="triggerDownload" :disabled="urls.length != mySrc.length">下载 Excel 文件</a-button>
+      <a-card title="导出设置" :bordered="false" style="width: 400px;margin-top: 40px;">
+        
+        <a-flex gap="middle" vertical>
+          <a-space  align="center">
+            批量页面数量: 
+            <a-input-number id="inputNumber" v-model:value="pageNum" :min="1" :max="10" />
+          </a-space>
+          <!-- 动态渲染上传组件 -->
+          <a-button @click="triggerDownload" :disabled="urls.length != mySrc.length">下载 Excel 文件</a-button>
+          <input type="file" @change="handleFileUpload" />
+          <a-button type="primary" @click="open2 = true" :disabled="file==null">导出</a-button>
+        </a-flex>
         <a-collapse v-model:activeKey="activeKey" style="width: 350px;">
           <a-collapse-panel v-for="(img, index) in mySrc" :key="index" :header="`动态图片资源 image ${index + 1}`">
             <template #extra>
@@ -103,7 +106,7 @@
 
           </a-collapse-panel>
         </a-collapse> 
-      </div>
+      </a-card>
     </a-col>
 
   </a-row>
@@ -150,6 +153,7 @@ export default {
       urls: [],
       pageNum: 1,
       fileLists: [],
+      file: null,
       uploading: false,
       open: false,
       mySrc: [],
@@ -195,7 +199,7 @@ export default {
                 content: '默认描述',
                 src:  'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false, false, false],
-                notes: ['', '', ''],
+                notes: ['动态标题', '动态描述', ''],
               },
           },
           ImageWidget: {
@@ -203,7 +207,7 @@ export default {
               props: {
                 src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false],
-                notes: [''],
+                notes: ['弹性图片-资源'],
               },
           },
           Image2Widget: {
@@ -211,7 +215,7 @@ export default {
               props: {
                 src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false],
-                notes: [''],
+                notes: ['固定比例图片-资源'],
               },
           },
           Image3Widget: {
@@ -219,7 +223,7 @@ export default {
               props: {
                 src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false],
-                notes: [''],
+                notes: ['齐平图片-资源'],
               },
           },
           RadioWidget: {
@@ -228,7 +232,7 @@ export default {
                 title: '默认标题',
                 src:  'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
                 switchStates: [false, false],
-                notes: ['', '', ''],
+                notes: ['音频组件-标题', '', ''],
               },
           },
           SubTitleWidget: {
@@ -236,7 +240,7 @@ export default {
               props: {
                 title: '默认标题',
                 switchStates: [false],
-                notes: [''],
+                notes: ['子标题'],
               },
           },
           TitleWidget: {
@@ -244,7 +248,7 @@ export default {
               props: {
                 title: '默认标题',
                 switchStates: [false],
-                notes: [''],
+                notes: ['标题'],
               },
           },
           ProductWidget: {
@@ -253,7 +257,7 @@ export default {
                 name: '默认名称',
                 desc: '默认描述',
                 switchStates: [false, false],
-                notes: ['', ''],
+                notes: ['产品-名称', '产品-描述'],
               },
           },
           // 可以添加其他类型组件的默认属性
@@ -306,6 +310,7 @@ export default {
 
       axios.post('http://127.0.0.1:8088/api/templates/update', templateData).then(response => {
         message.success({ content: '模板更新成功', key , duration: 2});
+        this.$router.push('/result/templatesave');  
         console.log('模板更新成功', response);
       }).catch(error => {
         message.error({ content: '模板更新失败', key , duration: 2 });
@@ -344,6 +349,7 @@ export default {
       .then(response => {
         const pageData = JSON.parse(response.data.content);
         this.widgets = pageData.widgets
+        this.$router.push('/result/templatesave'); 
         console.log('上传successfully', response.data);
       })
       .catch(error => {

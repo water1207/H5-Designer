@@ -18,6 +18,6 @@
 	import { useRouter } from 'vue-router';
 	const router = useRouter();
 	const navigate = (pageId) => {
-		router.push({ name: 'workspace' });
+		router.push({ name: 'workspacePage' });
 	};
 	</script>

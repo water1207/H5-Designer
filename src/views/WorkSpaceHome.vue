@@ -1,4 +1,5 @@
 <template>
+<main>
 	<a-layout-content
 		:style="{ padding: '0 80px', margin: 0, minHeight: '100vh', }"
 	>
@@ -10,19 +11,18 @@
 				:precision="2"
 				suffix="%"
 				:value-style="{ color: '#3f8600' }"
-				style="margin-right: 50px"
-			>
+				style="margin-right: 50px">
 				<template #prefix>
 					<arrow-up-outlined />
 				</template>
 			</a-statistic>
-    </a-card>
-		<a-card title="页面访问量" :bordered="false" style="width: 40%; margin-top: 20px;">
-			<a-progress type="circle" :percent="75" />
+    	</a-card>
+		<a-card title="模版使用率" :bordered="false" style="width: 40%; margin-top: 20px;">
+			<a-progress type="circle" :percent="rate" />
 		</a-card>
 	</a-flex>
 		<a-card title="你创建的模版" :bordered="false" style="width: 100%; margin-top: 20px;">
-			<a-table :columns="columns" :data-source="data" :row-key="(record, index) => index">
+			<a-table :columns="columns" :data-source="data" :row-key="record => record.id">
 				<template #headerCell="{ column }">
 					<template v-if="column.key === 'name'">
 						<span>
@@ -65,6 +65,7 @@
 			</a-table>
 		</a-card>
 	</a-layout-content>
+</main>
 </template>
 
 <script setup>
@@ -74,11 +75,12 @@ import dayjs from 'dayjs';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
 const router = useRouter();
+const rate = ref(45);
 const navigate = (tId) => {
   router.push({ name: 'design', params: { id: tId } });
 };
 async function handleDel(tId) {
-  axios.get("http://127.0.0.1:8088/api/templates/delete?id=" + tId).then((res) => {
+  axios.get("http:/127.0.0.1:8088/api/templates/delete?id=" + tId).then((res) => {
 	console.log(res);
 	message.success('删除成功', 1.5);
 	fetchData();
