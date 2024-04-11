@@ -1,9 +1,15 @@
-<template>
+<template><main>
 	<a-layout-content
 		:style="{ padding: '0 80px', margin: 0, minHeight: '100vh', }"
 	>
-		<a-card title="已发布的页面" :bordered="false" style="width: 100%; margin-top: 20px;">
-			<a-table :columns="columns" :data-source="data" :row-key="(record, index) => index">
+  <a-flex gap="middle" vertical style="margin-top: 20px">
+  <a-card v-for="batch in batches" :key="batch.batchId" class="batch-container" style="">
+    <div class="batch-header" style="margin-bottom: 15px;">
+      <h3>{{ batch.name }}</h3>
+      <span>生成时间: {{ dayjs(batch.createdAt).format('YYYY/MM/DD HH:mm:ss') }}</span>
+    </div>
+    <!-- <a-table pagination=false :columns="pageColumns" :data-source="batch.pages" row-key="pageId" > -->
+      <a-table :columns="pageColumns" :data-source="batch.pages" :row-key="batch.pages.pageId">
 				<template #headerCell="{ column }">
 					<template v-if="column.key === 'name'">
 						<span>
@@ -21,39 +27,36 @@
                 ---
 					</template>
 					<template v-else-if="column.key === 'tags'">
-						<span v-if="record.batchId == null">
-              <a-tag color="blue">单例页面</a-tag>
-						</span>
-            <span v-else>
-              <a-tag color="purple">批量页面</a-tag>
-            </span>
+                <a-tag color="purple">批量页面</a-tag>
 					</template>
 					<template v-else-if="column.key === 'createdAt'">
 						{{ dayjs(record.createdAt).format('YYYY/MM/DD HH:mm:ss') }}
-						<!-- {{ formatDate(record.createdAt) }} -->
 					</template>
 					<template v-else-if="column.key === 'qrcode'">
-						<a-qrcode ref="qrcodeCanvasRef" :value="`http://124.222.242.75/page/${record.pageId}`" size="100"/>
+						<a-qrcode type="svg" ref="qrcodeCanvasRef" :value="`http://124.222.242.75/page/${record.pageId}`" :size=100  />
 					</template>
 					<template v-else-if="column.key === 'action'">
 						<a-space>
-							<a-button type="primary" @click="dowloadChange(record.name)">下载二维码</a-button>
+              <a-button type="primary" @click="dowloadChange(record.name)">下载二维码</a-button>
 							<a-button @click="navigate(record.pageId)">编辑</a-button>
-              <a-button @click="handleDel(record.pageId)" danger>删除</a-button>
 						</a-space>
 					</template>
 				</template>
 			</a-table>
-		</a-card>
+  </a-card>
+  <div>
+  </div>
+</a-flex>
 	</a-layout-content>
+  </main>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted,reactive } from 'vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import vueQr from 'vue-qr/src/packages/vue-qr.vue'
 import { useRouter } from 'vue-router';
-import { message } from 'ant-design-vue';
 const router = useRouter();
 const navigate = (pageId) => {
   router.push({ name: 'pagedesign', params: { id: pageId } });
@@ -70,18 +73,11 @@ const dowloadChange = async (name) => {
   document.body.removeChild(a);
 };
 
-async function handleDel(pageId) {
-  axios.post("http://127.0.0.1:8088/api/page/delete?id=" + pageId).then((res) => {
-	console.log(res);
-	message.success(pageId, 1.5);
-	fetchData();
-  }).catch((err) => {
-	message.error('删除失败', 1.5);
-	console.log(err);
-  });
-};
 
-const columns = [
+const batches = ref([]);
+
+// 页面表格列配置
+const pageColumns = [
   {
 		title: '序号',
 		dataIndex: 'index',
@@ -118,15 +114,15 @@ const columns = [
   },
 
 ];
-const data = ref(null)
-async function fetchData() {
+const fetchBatches = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8088/api/page/getAll');
-    data.value = response.data; // 将响应数据赋值给 myData
+    const response = await axios.get('http://127.0.0.1:8088/api/batches/getAll');
+    batches.value = response.data;
   } catch (error) {
-    console.error('请求失败:', error);
+    console.error('Error fetching batches:', error);
   }
-}
-
-onMounted(fetchData);
+};
+onMounted(() => {
+  fetchBatches();
+});
 </script>

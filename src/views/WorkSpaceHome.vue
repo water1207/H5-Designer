@@ -4,7 +4,20 @@
 		:style="{ padding: '0 80px', margin: 0, minHeight: '100vh', }"
 	>
 	<a-flex gap="middle">
-		<a-card title="页面访问量" :bordered="false" style="width: 60%; margin-top: 20px;">
+		<a-card title="页面数据" :bordered="false" style="width: 60%; margin-top: 20px;">
+			<a-row>
+				<a-col :span="8">
+					<a-statistic title="所有页面" :value="statistics.totalPages" style="margin-right: 50px" />
+				</a-col>
+				<a-col :span="8">
+					<a-statistic title="单例页面" :value="statistics.singlePages" />
+				</a-col>
+				<a-col :span="8">
+					<a-statistic title="批量页面" :value="statistics.batchPages" />
+				</a-col>
+			</a-row>
+		</a-card>
+		<a-card title="页面访问量" :bordered="false" style="width: 25%; margin-top: 20px;">
 			<a-statistic
 				title="Feedback"
 				:value="11.28"
@@ -16,9 +29,9 @@
 					<arrow-up-outlined />
 				</template>
 			</a-statistic>
-    	</a-card>
-		<a-card title="模版使用率" :bordered="false" style="width: 40%; margin-top: 20px;">
-			<a-progress type="circle" :percent="rate" />
+    </a-card>
+		<a-card title="模版使用率" :bordered="false" style="width: 30%; margin-top: 20px;">
+			<a-progress type="circle" :percent="statistics.rate" />
 		</a-card>
 	</a-flex>
 		<a-card title="你创建的模版" :bordered="false" style="width: 100%; margin-top: 20px;">
@@ -58,7 +71,7 @@
 					<template v-else-if="column.key === 'action'">
 						<a-space>
 							<a-button @click="navigate(record.id)">编辑</a-button>
-							<a-button danger @click="handleDel(record.id)">删除</a-button>
+							<a-button danger @click="handleDel(record.id,record.name)">删除</a-button>
 						</a-space>
 					</template>
 				</template>
@@ -69,20 +82,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
 const router = useRouter();
-const rate = ref(45);
+const statistics = ref({ totalPages: 0, singlePages: 0, batchPages: 0 });
 const navigate = (tId) => {
   router.push({ name: 'design', params: { id: tId } });
 };
-async function handleDel(tId) {
-  axios.get("http:/124.222.242.75:8088/api/templates/delete?id=" + tId).then((res) => {
+
+const handleDel = async (tId, tName) => {
+  axios.post("http://127.0.0.1:8088/api/templates/delete?id=" + tId).then((res) => {
 	console.log(res);
-	message.success('删除成功', 1.5);
+	message.success(tName+"删除成功", 1.5);
 	fetchData();
   }).catch((err) => {
 	message.error('删除失败', 1.5);
@@ -137,8 +151,10 @@ const columns = [
 const data = ref(null)
 async function fetchData() {
   try {
-    const response = await axios.get('http://124.222.242.75:8088/api/templates/getAll');
-    data.value = response.data; // 将响应数据赋值给 myData
+    const response1 = await axios.get('http://127.0.0.1:8088/api/templates/getAll');
+		const response2 = await axios.get('http://127.0.0.1:8088/api/space/static');
+    data.value = response1.data; // 将响应数据赋值给 myData
+		statistics.value = response2.data;
   } catch (error) {
     console.error('请求失败:', error);
   }

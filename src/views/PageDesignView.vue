@@ -21,14 +21,14 @@
       <a-affix :offset-top="160">
         <a-card title="样式库" :bordered="false" style="width: 300px">
           <a-flex :gap="10"  vertical >
-          <a-button @click="addWidget('CombineWidget')">Add CombineWidget</a-button>
-          <a-button @click="addWidget('RadioWidget')">Add RadioWidget</a-button>
-          <a-button @click="addWidget('SubTitleWidget')">Add SubTitleWidget</a-button>
-          <a-button @click="addWidget('TitleWidget')">Add TitleWidget</a-button>
-          <a-button @click="addWidget('ProductWidget')">Add ProductWidget</a-button>
+          <a-button @click="addWidget('TitleWidget')">Add 标题</a-button>
+          <a-button @click="addWidget('SubTitleWidget')">Add 子标题</a-button>
+          <a-button @click="addWidget('ProductWidget')">Add 产品描述</a-button>
           <a-button @click="addWidget('ImageWidget')">Add 弹性图片</a-button>
           <a-button @click="addWidget('Image2Widget')">Add 16:9固定比例图片</a-button>
           <a-button @click="addWidget('Image3Widget')">Add 与内容齐平的图片</a-button>
+          <a-button @click="addWidget('CombineWidget')">Add 测试组件</a-button>
+          <a-button @click="addWidget('RadioWidget')">Add 音频组件</a-button>
           </a-flex>
         </a-card>
       </a-affix>
@@ -124,6 +124,8 @@ export default {
   created() {
     if (this.pageId) {
       this.loadPage(this.pageId)
+    }else{
+      this.pageId = ''
     }
   },
   methods: {
@@ -224,7 +226,7 @@ export default {
       };
 
       // 根据需要返回或使用 dynamics 和 dynamicsNotes
-      axios.post('http://124.222.242.75:8088/api/page/create', pageData).then(response => { 
+      axios.post('http://127.0.0.1:8088/api/page/create', pageData).then(response => { 
         message.success({ content: '页面发布成功', key , duration: 2});
         console.log('页面发布成功', response);
         this.$router.push('/result/pagesave'); 
@@ -251,7 +253,7 @@ export default {
       };
 
       // 根据需要返回或使用 dynamics 和 dynamicsNotes
-      axios.post('http://124.222.242.75:8088/api/page/update', pageData).then(response => { 
+      axios.post('http://127.0.0.1:8088/api/page/update', pageData).then(response => { 
         message.success({ content: '页面更新成功', key , duration: 2});
         this.$router.push('/result/pagesave');  
         console.log('页面更新成功', response);
@@ -264,7 +266,7 @@ export default {
     // 加载模版
     loadPage(id) {
       let key = 'init';
-      axios.get(`http://124.222.242.75:8088/api/page/get?id=${id}`, ).then(response => {
+      axios.get(`http://127.0.0.1:8088/api/page/get?id=${id}`, ).then(response => {
         const pageData = JSON.parse(response.data.content);
         this.widgets = pageData.widgets
         this.pageName = response.data.name
@@ -290,7 +292,7 @@ export default {
       const formData = new FormData();
       formData.append('file', this.file);
 
-      axios.post('http://124.222.242.75:8088/api/page/upload', formData, {
+      axios.post('http://127.0.0.1:8088/api/page/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

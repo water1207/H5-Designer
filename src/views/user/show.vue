@@ -3,7 +3,7 @@
     <div class="canvas2">
       <div v-for="(item, index) in widgets" :key="index" class="widget">
         <component
-          :is="item.type + 'Widget'"
+          :is="item.type + 'Lite'"
           :key="index"
           :editable="false"
           v-bind="item.props"
@@ -14,26 +14,26 @@
   </template>
   
   <script>
-  import CombineWidget from '@/components/widgets/CombineWidget.vue'
-  import RadioWidget from '@/components/widgets/RadioWidget.vue'
-  import SubTitleWidget from '@/components/widgets/SubTitleWidget.vue'
-  import TitleWidget from '@/components/widgets/TitleWidget.vue'
-  import ProductWidget from '@/components/widgets/ProductWidget.vue'
-  import ImageWidget from '@/components/widgets/ImageWidget.vue'
-  import Image2Widget from '@/components/widgets/Image2Widget.vue'
-  import Image3Widget from '@/components/widgets/Image3Widget.vue'
+  import CombineLite from '@/components/widgetsLite/CombineLite.vue'
+  import RadioLite from '@/components/widgetsLite/RadioLite.vue'
+  import SubTitleLite from '@/components/widgetsLite/SubTitleLite.vue'
+  import TitleLite from '@/components/widgetsLite/TitleLite.vue'
+  import ProductLite from '@/components/widgetsLite/ProductLite.vue'
+  import ImageLite from '@/components/widgetsLite/ImageLite.vue'
+  import Image2Lite from '@/components/widgetsLite/Image2Lite.vue'
+  import Image3Lite from '@/components/widgetsLite/Image3Lite.vue'
   import axios from 'axios'
 
   export default {
     components: {
-      CombineWidget,
-      RadioWidget,
-      SubTitleWidget,
-      TitleWidget,
-      ProductWidget,
-      ImageWidget,
-      Image2Widget,
-      Image3Widget
+      CombineLite,
+      RadioLite,
+      SubTitleLite,
+      TitleLite,  
+      ProductLite,
+      ImageLite,
+      Image2Lite,
+      Image3Lite
     },
     data() {
       return {
@@ -45,14 +45,12 @@
     methods: {
       loadPage(id) {
         let key = 'init';
-        axios.get(`http://124.222.242.75:8088/api/page/get?id=${id}`, ).then(response => {
+        axios.get(`http://127.0.0.1:8088/api/page/get?id=${id}`, ).then(response => {
           const pageData = JSON.parse(response.data.content);
           this.widgets = pageData.widgets
           this.pageName = response.data.name
-          message.success({ content: '加载页面成功', key , duration: 2});
           console.log('加载页面数据成功', response);
         }).catch(error => {
-          message.error({ content: '加载页面失败', key , duration: 2});
           console.error("加载页面数据失败", error);
         });
       },

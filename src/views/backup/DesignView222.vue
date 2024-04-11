@@ -207,7 +207,7 @@ export default {
         formData.append('files[]', file.originFileObj);
       });
       this.uploading = true;
-      axios.post('http://124.222.242.75:8088/api/file/upload', formData).then(res => {
+      axios.post('http://127.0.0.1:8088/api/file/upload', formData).then(res => {
         this.uploading = false;
         this.urls = res.data;
         message.success('upload successfully'+this.urls);
@@ -361,7 +361,7 @@ export default {
       };
 
       // 根据需要返回或使用 dynamics 和 dynamicsNotes
-      axios.post('http://124.222.242.75:8088/api/templates/save', templateData).then(response => { 
+      axios.post('http://127.0.0.1:8088/api/templates/save', templateData).then(response => { 
         message.success({ content: '模板创建成功', key , duration: 2});
         console.log('模板保存成功', response);
         this.$router.push('/result/templatesave'); 
@@ -383,7 +383,7 @@ export default {
         data: JSON.stringify({widgets: this.widgets, dynamics: this.dynamics, dynamicsNotes: this.dynamicsNotes}),
       };
 
-      axios.post('http://124.222.242.75:8088/api/templates/update', templateData).then(response => {
+      axios.post('http://127.0.0.1:8088/api/templates/update', templateData).then(response => {
         message.success({ content: '模板更新成功', key , duration: 2});
         console.log('模板更新成功', response);
       }).catch(error => {
@@ -395,7 +395,7 @@ export default {
     loadTemplate(id) {
       let key = 'templateLoad';
       message.loading({ content: 'Loading...', key });
-      axios.get(`http://124.222.242.75:8088/api/templates/get?id=${id}`, ).then(response => {
+      axios.get(`http://127.0.0.1:8088/api/templates/get?id=${id}`, ).then(response => {
         const templateData = JSON.parse(response.data.data);
         this.tName = response.data.name;
         this.widgets = templateData.widgets;
@@ -414,7 +414,7 @@ export default {
       const formData = new FormData();
       formData.append('file', this.file);
 
-      axios.post('http://124.222.242.75:8088/api/page/upload', formData, {
+      axios.post('http://127.0.0.1:8088/api/page/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

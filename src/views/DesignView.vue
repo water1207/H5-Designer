@@ -1,4 +1,4 @@
-<template>
+<template><main>
   <a-modal v-model:open="open2" title="批次名称" @ok="submitExcel()" width="400px" cancelText="取消" okText="开始导出">
     <a-input v-model:value="batchName" autofocus placeholder="请输入批次名称" />
   </a-modal>
@@ -13,7 +13,7 @@
       </template>
     <template #extra>
       <a-button v-if="tId == ''" key="1" type="primary" @click = "open = true;">创建</a-button>
-        <a-button v-else key="2" type="primary" @click = "updateTemplate()">更新</a-button>
+      <a-button v-else key="2" type="primary" @click = "updateTemplate()">更新</a-button>
     </template>
   </a-page-header>
   </a-affix>
@@ -70,7 +70,6 @@
     </a-col>
     <a-col :span="6" :offset="1">
       <a-card title="导出设置" :bordered="false" style="width: 400px;margin-top: 40px;">
-        
         <a-flex gap="middle" vertical>
           <a-space  align="center">
             批量页面数量: 
@@ -84,12 +83,15 @@
         <a-collapse v-model:activeKey="activeKey" style="width: 350px;">
           <a-collapse-panel v-for="(img, index) in mySrc" :key="index" :header="`动态图片资源 image ${index + 1}`">
             <template #extra>
+              <a-badge v-if="urls[index]!=null" status="success" />
+              <a-badge v-if="urls[index]==null" status="error" />
               <a-button
                 type="primary"
+                size="small"
                 :disabled="fileLists[index].length != pageNum"
-                :loading="uploading"  
+                :loading="uploading[index]"  
                 @click="() => handleUpload(index)">
-                {{ uploading ? '上传中' : '上传' }}
+                {{ uploading[index] ? '上传中' : '上传' }}
               </a-button>
             </template>
             <a-upload
@@ -113,6 +115,7 @@
   <a-modal v-model:open="open" title="模版名称" @ok="saveTemplate()" width="400px" cancelText="取消" okText="创建">
     <a-input v-model:value="tName" autofocus placeholder="请输入模版名称" />
   </a-modal>
+</main>
 </template>
 
 <script>
@@ -150,25 +153,26 @@ export default {
       tId: this.$route.params.id,
 
       ws: XLSX.utils.aoa_to_sheet([[]]),
-      urls: [],
+      urls: [],     // 用于存储上传图片的url 
       pageNum: 1,
       fileLists: [],
       file: null,
-      uploading: false,
+      uploading: [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
       open: false,
-      mySrc: [],
+      mySrc: [],    // 用于模版中动态图片的标签，有几个位置的动态图片
       open2: false, //batchName输入框的弹出层
       batchName: '自定义批次',  
       activeKey: ['0'],
     }
   },
-  created() {
+  mounted() {
     if (this.tId) {
       this.loadTemplate(this.tId);
+    }else{
+      this.tId = '';
     }
   },
   methods: {
-
     downloadExcel() {
       const wb = XLSX.utils.book_new();
       this.preExcelData(this.urls);
@@ -186,6 +190,11 @@ export default {
       saveAs(new Blob([buffer], { type: "application/octet-stream" }), "test.xlsx");
     },
     triggerDownload() {
+      if(this.tId == '') {
+        message.error('请先创建模版');
+        return;
+      }
+      this.updateTemplate2();
       this.downloadExcel();
     },
 
@@ -286,7 +295,7 @@ export default {
       };
 
       // 根据需要返回或使用 dynamics 和 dynamicsNotes
-      axios.post('http://124.222.242.75:8088/api/templates/save', templateData).then(response => { 
+      axios.post('http://127.0.0.1:8088/api/templates/save', templateData).then(response => { 
         message.success({ content: '模板创建成功', key , duration: 2});
         console.log('模板保存成功', response);
         this.$router.push('/result/templatesave'); 
@@ -308,9 +317,27 @@ export default {
         data: JSON.stringify({widgets: this.widgets, dynamics: this.dynamics, dynamicsNotes: this.dynamicsNotes}),
       };
 
-      axios.post('http://124.222.242.75:8088/api/templates/update', templateData).then(response => {
+      axios.post('http://127.0.0.1:8088/api/templates/update', templateData).then(response => {
         message.success({ content: '模板更新成功', key , duration: 2});
         this.$router.push('/result/templatesave');  
+        console.log('模板更新成功', response);
+      }).catch(error => {
+        message.error({ content: '模板更新失败', key , duration: 2 });
+        console.error('模板更新失败', error);
+      });
+    },
+    // 更新后不跳转
+    updateTemplate2() {
+      let key = 'templateUpdate';
+      message.loading({ content: 'Loading...', key });
+
+      const templateData = { 
+        id: this.tId,
+        data: JSON.stringify({widgets: this.widgets, dynamics: this.dynamics, dynamicsNotes: this.dynamicsNotes}),
+      };
+
+      axios.post('http://127.0.0.1:8088/api/templates/update', templateData).then(response => {
+        message.success({ content: '模板更新成功', key , duration: 2});
         console.log('模板更新成功', response);
       }).catch(error => {
         message.error({ content: '模板更新失败', key , duration: 2 });
@@ -321,7 +348,7 @@ export default {
     loadTemplate(id) {
       let key = 'templateLoad';
       message.loading({ content: 'Loading...', key });
-      axios.get(`http://124.222.242.75:8088/api/templates/get?id=${id}`, ).then(response => {
+      axios.get(`http://127.0.0.1:8088/api/templates/get?id=${id}`, ).then(response => {
         const templateData = JSON.parse(response.data.data);
         this.tName = response.data.name;
         this.widgets = templateData.widgets;
@@ -337,11 +364,15 @@ export default {
       this.file = event.target.files[0];
     },
     submitExcel() {
+      if(this.tId == '') {
+        message.error('请先创建模版');
+        return;
+      }
       const formData = new FormData();
       formData.append('file', this.file);
       formData.append('tId', this.tId);
       formData.append('batchName', this.batchName);
-      axios.post('http://124.222.242.75:8088/api/page/upload', formData, {
+      axios.post('http://127.0.0.1:8088/api/page/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -419,7 +450,7 @@ export default {
         formData.append('files[]', file);
       });
       this.uploading = true;
-      axios.post('http://124.222.242.75:8088/api/file/upload', formData, {
+      axios.post('http://127.0.0.1:8088/api/file/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

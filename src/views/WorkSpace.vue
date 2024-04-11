@@ -11,11 +11,9 @@
             :style="{ lineHeight: '63px' , display:'block', fontSize: '16px' ,width: '100%'}"
 		 	@click="headerClick"	
 			>
-            <a-menu-item key="1" >
+            <a-menu-item key="1" style="pointer-events:none">
               <a-flex align="center">
-                <!-- <template #icon> -->
                 <ExperimentTwoTone style="font-size: 30px;" />
-                <!-- </template> -->
                 H5 Designer for K.o.
               </a-flex>
             </a-menu-item>
