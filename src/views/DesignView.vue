@@ -215,7 +215,7 @@ export default {
               props: {
                 title: '默认标题',
                 content: '默认描述',
-                src:  'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                src:  'https://designer-1303826627.cos.ap-shanghai.myqcloud.com/defalut.png',
                 switchStates: [false, false, false],
                 notes: ['动态标题', '动态描述', ''],
               },
@@ -223,7 +223,7 @@ export default {
           ImageWidget: {
               type: 'Image',
               props: {
-                src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                src: 'https://designer-1303826627.cos.ap-shanghai.myqcloud.com/defalut.png',
                 switchStates: [false],
                 notes: ['弹性图片-资源'],
               },
@@ -231,7 +231,7 @@ export default {
           Image2Widget: {
               type: 'Image2',
               props: {
-                src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                src: 'https://designer-1303826627.cos.ap-shanghai.myqcloud.com/defalut.png',
                 switchStates: [false],
                 notes: ['固定比例图片-资源'],
               },
@@ -239,7 +239,7 @@ export default {
           Image3Widget: {
               type: 'Image3',
               props: {
-                src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                src: 'https://designer-1303826627.cos.ap-shanghai.myqcloud.com/defalut.png',
                 switchStates: [false],
                 notes: ['齐平图片-资源'],
               },
@@ -248,7 +248,7 @@ export default {
               type: 'Radio',
               props: {
                 title: '默认标题',
-                src:  'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                src:  'https://designer-1303826627.cos.ap-shanghai.myqcloud.com/defalut.png',
                 switchStates: [false, false],
                 notes: ['音频组件-标题', '', ''],
               },
@@ -467,7 +467,7 @@ export default {
           'Content-Type': 'multipart/form-data',
         },
       }).then(res => {
-        this.uploading = false;
+        this.uploading[index] = false;
         // 根据需要处理响应
         this.urls[index] = res.data;
         console.log('urls',this.urls.length);

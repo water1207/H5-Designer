@@ -271,7 +271,7 @@ export default {
               props: {
                 title: '默认标题',
                 content: '默认描述',
-                src:  'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                src:  'https://designer-1303826627.cos.ap-shanghai.myqcloud.com/defalut.png',
                 switchStates: [false, false, false],
                 notes: ['', '', 'iiimage'],
               },
@@ -279,7 +279,7 @@ export default {
           ImageWidget: {
               type: 'Image',
               props: {
-                src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                src: 'https://designer-1303826627.cos.ap-shanghai.myqcloud.com/defalut.png',
                 switchStates: [false],
                 notes: ['iiimage'],
               },
@@ -287,7 +287,7 @@ export default {
           Image2Widget: {
               type: 'Image2',
               props: {
-                src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                src: 'https://designer-1303826627.cos.ap-shanghai.myqcloud.com/defalut.png',
                 switchStates: [false],
                 notes: ['iiimage'],
               },
@@ -295,7 +295,7 @@ export default {
           Image3Widget: {
               type: 'Image3',
               props: {
-                src: 'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                src: 'https://designer-1303826627.cos.ap-shanghai.myqcloud.com/defalut.png',
                 switchStates: [false],
                 notes: ['iiimage'],
               },
@@ -304,7 +304,7 @@ export default {
               type: 'Radio',
               props: {
                 title: '默认标题',
-                src:  'https://raw.githubusercontent.com/WontonData/ArtShore/vue3/src/static/img/twitter-card.png',
+                src:  'https://designer-1303826627.cos.ap-shanghai.myqcloud.com/defalut.png',
                 switchStates: [false, false],
                 notes: ['', '', ''],
               },
