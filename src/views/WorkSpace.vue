@@ -4,13 +4,12 @@
       <a-layout-header 
           style="background: #fff; box-shadow: 0 3px 3px rgba(75, 75, 75, 0.3); z-index: 100; width: 100%;"
           :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
-		<a-menu
+        <a-menu
             v-model:selectedKeys="selectedKeys"
             theme="light"
             mode="horizontal"
             :style="{ lineHeight: '63px' , display:'block', fontSize: '16px' ,width: '100%'}"
-		 	@click="headerClick"	
-			>
+            @click="headerClick">
             <a-menu-item key="1" style="pointer-events:none">
               <a-flex align="center">
                 <ExperimentTwoTone style="font-size: 30px;" />
@@ -22,6 +21,7 @@
             <a-menu-item key="design" :style="{float:'right'}">模版构建</a-menu-item>
         </a-menu>
       </a-layout-header>
+
 			<a-layout :style="{  marginTop: '64px' }" has-sider>
 				<a-layout-sider width="200" style="background: #fff;" :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0, top: '64px', bottom: 0 }">
 					<a-menu
@@ -36,27 +36,19 @@
 							<AppstoreTwoTone />
 							<span>数据总览</span>
 						</a-menu-item>
-						<a-sub-menu key="sub1">
-							<template #title>
-								<span>
-									<user-outlined />
-									我的页面
-								</span>
-							</template>
-							<a-menu-item key="9">option1</a-menu-item>
-							<a-menu-item key="8">option2</a-menu-item>
-							<a-menu-item key="7">option3</a-menu-item>
-							<a-menu-item key="6">option4</a-menu-item>
-						</a-sub-menu>
-						<a-menu-item key="workspacePage">
+            <a-menu-item key="workspacePage">
 							<DatabaseTwoTone />
 							<span>所有页面</span>
 						</a-menu-item>
-						<a-menu-item key="workspaceBatch">
-							<BuildTwoTone />
-							<span>批量页面</span>
-						</a-menu-item>
-						<a-menu-item key="index">
+						<a-sub-menu key="sub1">
+							<template #title>
+                <BuildTwoTone />
+								<span>批量页面</span>
+							</template>
+							<a-menu-item key="workspaceBatch">搜索与筛选</a-menu-item>
+							<a-menu-item key="workspaceBatchAll">所有批次</a-menu-item>
+						</a-sub-menu>
+						<a-menu-item key="workspaceTemplate">
 							<LayoutTwoTone />
 							<span>我的模版</span>
 						</a-menu-item>

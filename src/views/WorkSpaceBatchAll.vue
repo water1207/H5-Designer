@@ -37,7 +37,6 @@
 					</template>
 					<template v-else-if="column.key === 'action'">
 						<a-space>
-              <a-button type="primary" @click="dowloadChange(record.name)">下载二维码</a-button>
 							<a-button @click="navigate(record.pageId)">编辑</a-button>
 						</a-space>
 					</template>

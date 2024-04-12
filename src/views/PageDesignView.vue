@@ -5,7 +5,7 @@
     style="padding: 5px 24px; background: #fff; border: 1px solid rgb(235, 237, 240)"
     title="页面设计"
     :sub-title="pageName"
-    @back="() => null">
+    @back="navigator()">
     <template #tags>
         <a-tag color="blue">编辑中</a-tag>
       </template>
@@ -339,7 +339,9 @@ export default {
       }
       this.hideTimeoutId = null;
     },
-
+    navigator() {
+      this.$router.push('/workspace/page'); 
+    }
   }
 }
 

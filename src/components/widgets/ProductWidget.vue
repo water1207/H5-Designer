@@ -22,7 +22,7 @@
 				<a-space align="center">
 					介绍
 					<a-switch v-model:checked="_switchStates[1]"></a-switch>
-					<a-input v-if="_switchStates[0]" v-model:value="_notes[1]" placeholder="动态产品介绍备注"></a-input>
+					<a-input v-if="_switchStates[1]" v-model:value="_notes[1]" placeholder="动态产品介绍备注"></a-input>
 				</a-space>
 				<a-textarea v-model:value="_desc"></a-textarea>
 			</a-flex>

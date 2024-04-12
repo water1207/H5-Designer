@@ -3,37 +3,6 @@
 	<a-layout-content
 		:style="{ padding: '0 80px', margin: 0, minHeight: '100vh', }"
 	>
-	<a-flex gap="middle">
-		<a-card title="页面数据" :bordered="false" style="width: 60%; margin-top: 20px;">
-			<a-row>
-				<a-col :span="8">
-					<a-statistic title="所有页面" :value="statistics.totalPages" style="margin-right: 50px" />
-				</a-col>
-				<a-col :span="8">
-					<a-statistic title="单例页面" :value="statistics.singlePages" />
-				</a-col>
-				<a-col :span="8">
-					<a-statistic title="批量页面" :value="statistics.batchPages" />
-				</a-col>
-			</a-row>
-		</a-card>
-		<a-card title="页面访问量" :bordered="false" style="width: 25%; margin-top: 20px;">
-			<a-statistic
-				title="Feedback"
-				:value="11.28"
-				:precision="2"
-				suffix="%"
-				:value-style="{ color: '#3f8600' }"
-				style="margin-right: 50px">
-				<template #prefix>
-					<arrow-up-outlined />
-				</template>
-			</a-statistic>
-    </a-card>
-		<a-card title="模版使用率" :bordered="false" style="width: 30%; margin-top: 20px;">
-			<a-progress type="circle" :percent="statistics.rate" />
-		</a-card>
-	</a-flex>
 		<a-card title="你创建的模版" :bordered="false" style="width: 100%; margin-top: 20px;">
 			<a-table :columns="columns" :data-source="data" :row-key="record => record.id">
 				<template #headerCell="{ column }">

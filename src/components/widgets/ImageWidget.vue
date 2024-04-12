@@ -15,7 +15,7 @@
 				<a-space align="center">
 					图片
 					<a-switch v-model:checked="_switchStates[0]" @change="change"></a-switch>
-					<a-input v-if="_switchStates[0]" v-model:value="_notes[0]" placeholder="动态图片资源备注"></a-input>
+					<!-- <a-input v-if="_switchStates[0]" v-model:value="_notes[0]" placeholder="动态图片资源备注"></a-input> -->
 				</a-space>
 				<a-upload
 					v-model:file-list="fileList"

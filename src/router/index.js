@@ -25,15 +25,6 @@ const router = createRouter({
           name: 'pagedesign',
           props: true ,
           component: () => import('../views/PageDesignView.vue'),
-        },
-        {
-          path:'test',
-          name:'test',
-          component: () => import('../views/Test.vue'),
-        },{
-          path:'demo',
-          name:'demo',
-          component: () => import('../views/Demo2.vue'),
         }
       ]
     },
@@ -50,11 +41,18 @@ const router = createRouter({
         name:'workspaceBatch',
         component: () => import('../views/WorkSpaceBatch.vue')
       },{
+        path:'batchAll',
+        name:'workspaceBatchAll',
+        component: () => import('../views/WorkSpaceBatchAll.vue')
+      },{
         path:'page',
         name:'workspacePage',
         component: () => import('../views/WorkSpacePages.vue')
-      }
-      ]
+      },{
+        path:'template',
+        name:'workspaceTemplate',
+        component: () => import('../views/WorkSpaceTemplate.vue')
+      }]
     },
     {
       path: '/page/:id', // :id是路由参数
@@ -71,8 +69,9 @@ const router = createRouter({
         name:'pageSave',
         component: () => import('../views/result/PageSave.vue'),
       },{
-        path:'templatesave',
+        path:'templatesave/:id?',
         name:'templateSave',
+        props: true,
         component: () => import('../views/result/TemplateSave.vue'),
       },{
         path: 'templateExport',

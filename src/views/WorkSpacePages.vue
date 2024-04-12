@@ -39,7 +39,7 @@
 						<a-space>
 							<a-button type="primary" @click="dowloadChange(record.name)">下载二维码</a-button>
 							<a-button @click="navigate(record.pageId)">编辑</a-button>
-              <a-button @click="handleDel(record.pageId)" danger>删除</a-button>
+              <a-button @click="handleDel(record.pageId, record.name)" danger>删除</a-button>
 						</a-space>
 					</template>
 				</template>
@@ -70,13 +70,14 @@ const dowloadChange = async (name) => {
   document.body.removeChild(a);
 };
 
-async function handleDel(pageId) {
+async function handleDel(pageId, pageName) {
   axios.post("http://127.0.0.1:8088/api/page/delete?id=" + pageId).then((res) => {
 	console.log(res);
 	message.success(pageId, 1.5);
+  message.success("页面: "+pageName+" 删除成功", 1.5);
 	fetchData();
   }).catch((err) => {
-	message.error('删除失败', 1.5);
+    message.success("页面: "+pageName+" 删除失败", 1.5);
 	console.log(err);
   });
 };

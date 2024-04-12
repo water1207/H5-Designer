@@ -7,7 +7,7 @@
     style="padding: 5px 24px; background: #fff; border: 1px solid rgb(235, 237, 240)"
     title="Title"
     :sub-title="tName"
-    @back="() => null">
+    @back="navigator()">
     <template #tags>
         <a-tag color="blue">编辑中</a-tag>
       </template>
@@ -69,7 +69,10 @@
       </div>
     </a-col>
     <a-col :span="6" :offset="1">
-      <a-card title="导出设置" :bordered="false" style="width: 400px;margin-top: 40px;">
+      <a-card v-if="tId == ''" title="导出设置" :bordered="false" style="width: 400px;margin-top: 40px;">
+        <a-alert message="请先点击创建按钮，创建模版后再使用导出功能" type="warning" />
+      </a-card>
+      <a-card v-else title="导出设置" :bordered="false" style="width: 400px;margin-top: 40px;">
         <a-flex gap="middle" vertical>
           <a-space  align="center">
             批量页面数量: 
@@ -109,6 +112,7 @@
           </a-collapse-panel>
         </a-collapse> 
       </a-card>
+
     </a-col>
 
   </a-row>
@@ -298,7 +302,7 @@ export default {
       axios.post('http://127.0.0.1:8088/api/templates/save', templateData).then(response => { 
         message.success({ content: '模板创建成功', key , duration: 2});
         console.log('模板保存成功', response);
-        this.$router.push('/result/templatesave'); 
+        this.$router.push('/result/templatesave/'+response.data.id); 
         this.open = false;
       }).catch(error => {
         message.error({ content: '模板创建失败', key , duration: 2 });
@@ -492,6 +496,9 @@ export default {
         }
       });
     },
+    navigator() {
+      this.$router.push('/workspace/template'); 
+    }
 
   },
   watch: {
