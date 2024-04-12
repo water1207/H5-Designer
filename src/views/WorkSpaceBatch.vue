@@ -106,7 +106,7 @@ const batch = ref({
 
 // 删除批次二次确认
 const handleDel = async (e) => {
-    axios.post("http://127.0.0.1:8088/api/batches/delete?id=" + batch.value.batchId).then((res) => {
+    axios.post("http://124.222.242.75:8088/api/batches/delete?id=" + batch.value.batchId).then((res) => {
     console.log(res);
     message.success('删除成功', 1.5);
     location.reload();
@@ -175,7 +175,7 @@ const value = ref(null);
 
 const fetchBatches = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8088/api/batches/getAll');
+    const response = await axios.get('http://124.222.242.75:8088/api/batches/getAll');
     batches.value = response.data;
     options.value = [];
     for (let i = 0; i < batches.value.length; i++) {
