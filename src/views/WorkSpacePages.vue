@@ -73,7 +73,6 @@ const dowloadChange = async (name) => {
 async function handleDel(pageId, pageName) {
   axios.post("http://127.0.0.1:8088/api/page/delete?id=" + pageId).then((res) => {
 	console.log(res);
-	message.success(pageId, 1.5);
   message.success("页面: "+pageName+" 删除成功", 1.5);
 	fetchData();
   }).catch((err) => {

@@ -3,7 +3,7 @@
   <div class="SubTitle"
     @mouseenter="buttonVisiable=true"
 		@mouseleave="buttonVisiable=false">
-      <h3 :style="ddstyle(0)"> {{ _title }} </h3>
+      <h3> {{ _title }} </h3>
       <div class="line-container">
         <div class="colored-bold-section"></div>
       </div>
@@ -14,8 +14,6 @@
 			<a-flex gap="small" vertical>
 				<a-space align="center">
 					子标题
-					<a-switch v-model:checked="_switchStates[0]"></a-switch>
-					<a-input v-if="_switchStates[0]" v-model:value="_notes[0]" placeholder="动态子标题备注"></a-input>
 				</a-space>
 				<a-input v-model:value="_title"></a-input>
 			</a-flex>
@@ -63,9 +61,6 @@ export default {
     }
   },
   methods: {
-		ddstyle(index) {
-			return this.switchStates[index] ? { textShadow: '2px 2px 4px #337ecc' } : {};
-		},
 		save() {
 			this.$emit('update:content', {
 				content: {

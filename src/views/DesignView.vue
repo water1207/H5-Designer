@@ -72,7 +72,10 @@
       <a-card v-if="tId == ''" title="导出设置" :bordered="false" style="width: 400px;margin-top: 40px;">
         <a-alert message="请先点击创建按钮，创建模版后再使用导出功能" type="warning" />
       </a-card>
-      <a-card v-else title="导出设置" :bordered="false" style="width: 400px;margin-top: 40px;">
+      <a-card v-else-if="updateFlag" title="导出设置" :bordered="false" style="width: 400px;margin-top: 40px;">
+        <a-alert message="存在未保存的修改，保存后再使用导出功能" type="warning" />
+      </a-card>
+      <a-card v-else="updateFlag" title="导出设置" :bordered="false" style="width: 400px;margin-top: 40px;">
         <a-flex gap="middle" vertical>
           <a-space  align="center">
             批量页面数量: 
@@ -81,7 +84,7 @@
           <!-- 动态渲染上传组件 -->
           <a-button @click="triggerDownload" :disabled="urls.length != mySrc.length">下载 Excel 文件</a-button>
           <input type="file" @change="handleFileUpload" />
-          <a-button type="primary" @click="open2 = true" :disabled="file==null">导出</a-button>
+          <a-button type="primary" @click="open2 = true">导出</a-button>
         </a-flex>
         <a-collapse v-model:activeKey="activeKey" style="width: 350px;">
           <a-collapse-panel v-for="(img, index) in mySrc" :key="index" :header="`动态图片资源 image ${index + 1}`">
@@ -161,12 +164,13 @@ export default {
       pageNum: 1,
       fileLists: [],
       file: null,
-      uploading: [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+      uploading: [],
       open: false,
       mySrc: [],    // 用于模版中动态图片的标签，有几个位置的动态图片
       open2: false, //batchName输入框的弹出层
       batchName: '自定义批次',  
       activeKey: ['0'],
+      updateFlag: false
     }
   },
   mounted() {
@@ -204,6 +208,7 @@ export default {
 
     // 添加组件至画布
     addWidget(type) {
+      this.updateFlag = true;
       const defaultProps = {
           CombineWidget: {
               type: 'Combine',
@@ -323,7 +328,7 @@ export default {
 
       axios.post('http://127.0.0.1:8088/api/templates/update', templateData).then(response => {
         message.success({ content: '模板更新成功', key , duration: 2});
-        this.$router.push('/result/templatesave');  
+        this.$router.push('/result/templatesave/'+response.data.id);   
         console.log('模板更新成功', response);
       }).catch(error => {
         message.error({ content: '模板更新失败', key , duration: 2 });
@@ -384,7 +389,7 @@ export default {
       .then(response => {
         const pageData = JSON.parse(response.data.content);
         this.widgets = pageData.widgets
-        this.$router.push('/result/templatesave'); 
+        this.$router.push('/result/templateExport'); 
         console.log('上传successfully', response.data);
       })
       .catch(error => {
@@ -394,10 +399,12 @@ export default {
 
     // 移除组件
     removeWidget(index) {
+      this.updateFlag = true;
       this.widgets.splice(index, 1);
     },
     // 上移组件
     moveUp(index) {
+      this.updateFlag = true;
       if (index > 0) {
         const itemToMove = this.widgets[index];
         this.widgets.splice(index, 1);
@@ -406,6 +413,7 @@ export default {
     },
     // 下移组件
     moveDown(index) {
+      this.updateFlag = true;
       if (index < this.widgets.length - 1) {
         const itemToMove = this.widgets[index];
         this.widgets.splice(index, 1);
@@ -453,7 +461,7 @@ export default {
       this.fileLists[index].forEach(file => {
         formData.append('files[]', file);
       });
-      this.uploading = true;
+      this.uploading[index] = true;
       axios.post('http://127.0.0.1:8088/api/file/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -499,7 +507,6 @@ export default {
     navigator() {
       this.$router.push('/workspace/template'); 
     }
-
   },
   watch: {
     widgets: {

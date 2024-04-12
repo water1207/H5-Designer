@@ -8,7 +8,6 @@
 				<smile-twoTone />
 			</template>
       <template #extra>
-				<!-- <a-button key="buy">返回</a-button> -->
         <a-button key="console" type="primary" @click="navigate">前往工作台</a-button>
       </template>
     </a-result>

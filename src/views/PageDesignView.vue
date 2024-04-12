@@ -57,7 +57,7 @@
               </a-flex>
             </template>
             <component
-            :is="item.type + 'Widget'"
+            :is="item.type + 'Widget2'"
             :key="index"
             v-bind="item.props"
             @update:content="(eventData) => handleWidgetUpdate(eventData, index)"
@@ -68,7 +68,7 @@
     </a-col>
     <a-col :span="6" :offset="1">
       <a-affix :offset-top="220">
-        <a-card title="编辑历史">
+        <a-card title="编辑指南">
         <a-timeline>
           <a-timeline-item v-for="item in timelines">
             {{ item }}
@@ -85,14 +85,14 @@
 </template>
 
 <script>
-import CombineWidget from '@/components/widgets/CombineWidget.vue'
-import RadioWidget from '@/components/widgets/RadioWidget.vue'
-import SubTitleWidget from '@/components/widgets/SubTitleWidget.vue'
-import TitleWidget from '@/components/widgets/TitleWidget.vue'
-import ProductWidget from '@/components/widgets/ProductWidget.vue'
-import ImageWidget from '@/components/widgets/ImageWidget.vue'
-import Image2Widget from '@/components/widgets/Image2Widget.vue'
-import Image3Widget from '@/components/widgets/Image3Widget.vue'
+import CombineWidget2 from '@/components/widgets2/CombineWidget2.vue'
+import RadioWidget2 from '@/components/widgets2/RadioWidget2.vue'
+import SubTitleWidget2 from '@/components/widgets2/SubTitleWidget2.vue'
+import TitleWidget2 from '@/components/widgets2/TitleWidget2.vue'
+import ProductWidget2 from '@/components/widgets2/ProductWidget2.vue'
+import ImageWidget2 from '@/components/widgets2/ImageWidget2.vue'
+import Image2Widget2 from '@/components/widgets2/Image2Widget2.vue'
+import Image3Widget2 from '@/components/widgets2/Image3Widget2.vue'
 import { message } from 'ant-design-vue';
 import { saveAs } from 'file-saver';
 import axios from 'axios'
@@ -100,14 +100,14 @@ import * as XLSX from 'xlsx'
 
 export default {
   components: {
-    CombineWidget,
-    RadioWidget,
-    SubTitleWidget,
-    TitleWidget,
-    ProductWidget,
-    ImageWidget,
-    Image2Widget,
-    Image3Widget,
+    CombineWidget2,
+    RadioWidget2,
+    SubTitleWidget2,
+    TitleWidget2,
+    ProductWidget2,
+    ImageWidget2,
+    Image2Widget2,
+    Image3Widget2,
   },
   data() {
     return {
