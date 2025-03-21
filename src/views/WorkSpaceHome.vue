@@ -94,7 +94,7 @@ const navigate = (tId) => {
 };
 
 const handleDel = async (tId, tName) => {
-  axios.post("http://124.222.242.75:8088/api/templates/delete?id=" + tId).then((res) => {
+  axios.post("http://127.0.0.1:8088/api/templates/delete?id=" + tId).then((res) => {
 	console.log(res);
 	message.success("模版: "+tName+" 删除成功", 1.5);
 	fetchData();
@@ -151,8 +151,8 @@ const columns = [
 const data = ref(null)
 async function fetchData() {
   try {
-    const response1 = await axios.get('http://124.222.242.75:8088/api/templates/getAll');
-		const response2 = await axios.get('http://124.222.242.75:8088/api/space/static');
+    const response1 = await axios.get('http://127.0.0.1:8088/api/templates/getAll');
+		const response2 = await axios.get('http://127.0.0.1:8088/api/space/static');
     data.value = response1.data; // 将响应数据赋值给 myData
 		statistics.value = response2.data;
   } catch (error) {

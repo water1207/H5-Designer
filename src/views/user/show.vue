@@ -45,7 +45,7 @@
     methods: {
       loadPage(id) {
         let key = 'init';
-        axios.get(`http://124.222.242.75:8088/api/page/get?id=${id}`, ).then(response => {
+        axios.get(`http://127.0.0.1:8088/api/page/get?id=${id}`, ).then(response => {
           const pageData = JSON.parse(response.data.content);
           this.widgets = pageData.widgets
           this.pageName = response.data.name

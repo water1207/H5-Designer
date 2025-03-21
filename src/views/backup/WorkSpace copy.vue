@@ -49,7 +49,7 @@
 						<!-- {{ formatDate(record.createdAt) }} -->
 					</template>
 					<template v-else-if="column.key === 'qrcode'">
-						<a-qrcode ref="qrcodeCanvasRef" :value="`http://124.222.242.75:3000/page/${record.pageId}`" size="100" />
+						<a-qrcode ref="qrcodeCanvasRef" :value="`http://127.0.0.1:3000/page/${record.pageId}`" size="100" />
 					</template>
 					<template v-else-if="column.key === 'action'">
 						<a-space>
@@ -129,7 +129,7 @@ const columns = [
 const data = ref(null)
 async function fetchData() {
   try {
-    const response = await axios.get('http://124.222.242.75:8088/api/page/getAll');
+    const response = await axios.get('http://127.0.0.1:8088/api/page/getAll');
     data.value = response.data; // 将响应数据赋值给 myData
   } catch (error) {
     console.error('请求失败:', error);

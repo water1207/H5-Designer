@@ -81,7 +81,8 @@ export default {
 		save() {
 			this.$emit('update:content', {
 				content: {
-					title: this._title,
+					name: this._name, // 将产品名传递给父组件
+					desc: this._desc, // 将产品介绍传递给父组件
 					switchStates: this._switchStates, // 将开关状态数组传递给父组件
 					notes: this._notes, // 将备注数组传递给父组件
 				},
