@@ -91,7 +91,7 @@ export default {
 			console.log(file)
 			const form = new FormData()
 			form.append('file', file.file)
-			axios.post('http://127.0.0.1:8088/api/file/image/upload', form).then(res => {
+			axios.post('http://124.222.242.75:8088/api/file/image/upload', form).then(res => {
 				file.onSuccess(res.data)
 				this._src = res.data;
 				file.status = 'success'

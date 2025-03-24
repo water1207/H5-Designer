@@ -188,7 +188,7 @@
           data: JSON.stringify({widgets, dynamics, dynamicsNotes}),
         };
         // 根据需要返回或使用 dynamics 和 dynamicsNotes
-        axios.post('http://127.0.0.1:8088/api/templates/save', templateData).then(response => { 
+        axios.post('http://124.222.242.75:8088/api/templates/save', templateData).then(response => { 
           ElNotification({
             title: 'Success',
             message: '模板保存成功',
@@ -213,7 +213,7 @@
           id: templateId,
           data: JSON.stringify({widgets: this.widgets, dynamics: this.dynamics, dynamicsNotes: this.dynamicsNotes}),
         };
-        axios.post('http://127.0.0.1:8088/api/templates/update', templateData).then(response => {
+        axios.post('http://124.222.242.75:8088/api/templates/update', templateData).then(response => {
           ElNotification({
             title: 'Success',
             message: '模板更新成功',
@@ -233,7 +233,7 @@
       },
       // 加载模版
       loadTemplate(templateId) {
-        axios.get(`http://127.0.0.1:8088/api/templates/get?id=${templateId}`, ).then(response => {
+        axios.get(`http://124.222.242.75:8088/api/templates/get?id=${templateId}`, ).then(response => {
           const templateData = JSON.parse(response.data.data);
           this.applyTemplate(templateData);
           ElNotification({
@@ -441,7 +441,7 @@
           }
         });
   
-        axios.post('http://127.0.0.1:8088/api/pages/publish', {content: content}).then(response => {
+        axios.post('http://124.222.242.75:8088/api/pages/publish', {content: content}).then(response => {
           ElNotification({
             title: 'Success',
             message: '单页发布成功',
@@ -515,7 +515,7 @@
       },
       publishHtml() {
         const content = this.generateHtmls();
-        axios.post('http://127.0.0.1:8088/api/pages/publish', {content: content}).then(response => {
+        axios.post('http://124.222.242.75:8088/api/pages/publish', {content: content}).then(response => {
           ElNotification({
             title: 'Success',
             message: '页面发布成功',

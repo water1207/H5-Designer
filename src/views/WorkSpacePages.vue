@@ -33,7 +33,7 @@
 						<!-- {{ formatDate(record.createdAt) }} -->
 					</template>
 					<template v-else-if="column.key === 'qrcode'">
-						<a-qrcode ref="qrcodeCanvasRef" :value="`http://127.0.0.1/page/${record.pageId}`" size="100"/>
+						<a-qrcode ref="qrcodeCanvasRef" :value="`http://124.222.242.75/page/${record.pageId}`" size="100"/>
 					</template>
 					<template v-else-if="column.key === 'action'">
 						<a-space>
@@ -71,7 +71,7 @@ const dowloadChange = async (name) => {
 };
 
 async function handleDel(pageId, pageName) {
-  axios.post("http://127.0.0.1:8088/api/page/delete?id=" + pageId).then((res) => {
+  axios.post("http://124.222.242.75:8088/api/page/delete?id=" + pageId).then((res) => {
 	console.log(res);
   message.success("页面: "+pageName+" 删除成功", 1.5);
 	fetchData();
@@ -121,7 +121,7 @@ const columns = [
 const data = ref(null)
 async function fetchData() {
   try {
-    const response = await axios.get('http://127.0.0.1:8088/api/page/getAll');
+    const response = await axios.get('http://124.222.242.75:8088/api/page/getAll');
     data.value = response.data; // 将响应数据赋值给 myData
   } catch (error) {
     console.error('请求失败:', error);

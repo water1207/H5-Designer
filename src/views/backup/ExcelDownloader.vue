@@ -48,7 +48,7 @@
     mounted() {
         let key = 'templateLoad';
         message.loading({ content: 'Loading...', key });
-        axios.get(`http://127.0.0.1:8088/api/templates/get?id=14`).then(response => {
+        axios.get(`http://124.222.242.75:8088/api/templates/get?id=14`).then(response => {
           const templateData = JSON.parse(response.data.data);
           this.widgets = templateData.widgets;
           
@@ -78,7 +78,7 @@
           formData.append('files[]', file.originFileObj);
         });
         this.uploading = true;
-        axios.post('http://127.0.0.1:8088/api/file/upload', formData).then(res => {
+        axios.post('http://124.222.242.75:8088/api/file/upload', formData).then(res => {
           this.uploading = false;
           this.urls = res.data;
           message.success('upload successfully');

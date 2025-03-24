@@ -33,7 +33,7 @@
 						{{ dayjs(record.createdAt).format('YYYY/MM/DD HH:mm:ss') }}
 					</template>
 					<template v-else-if="column.key === 'qrcode'">
-						<a-qrcode type="svg" ref="qrcodeCanvasRef" :value="`http://127.0.0.1/page/${record.pageId}`" :size=100  />
+						<a-qrcode type="svg" ref="qrcodeCanvasRef" :value="`http://124.222.242.75/page/${record.pageId}`" :size=100  />
 					</template>
 					<template v-else-if="column.key === 'action'">
 						<a-space>
@@ -115,7 +115,7 @@ const pageColumns = [
 ];
 const fetchBatches = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8088/api/batches/getAll');
+    const response = await axios.get('http://124.222.242.75:8088/api/batches/getAll');
     batches.value = response.data;
   } catch (error) {
     console.error('Error fetching batches:', error);

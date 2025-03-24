@@ -224,9 +224,9 @@ export default {
         name: this.pageName,
         data: JSON.stringify({widgets}),
       };
-      
+
       // 根据需要返回或使用 dynamics 和 dynamicsNotes
-      axios.post('http://127.0.0.1:8088/api/page/create', pageData).then(response => { 
+      axios.post('http://124.222.242.75:8088/api/page/create', pageData).then(response => { 
         message.success({ content: '页面发布成功', key , duration: 2});
         console.log('页面发布成功', response);
         this.$router.push('/result/pagesave'); 
@@ -253,7 +253,7 @@ export default {
       };
 
       // 根据需要返回或使用 dynamics 和 dynamicsNotes
-      axios.post('http://127.0.0.1:8088/api/page/update', pageData).then(response => { 
+      axios.post('http://124.222.242.75:8088/api/page/update', pageData).then(response => { 
         message.success({ content: '页面更新成功', key , duration: 2});
         this.$router.push('/result/pagesave');  
         console.log('页面更新成功', response);
@@ -266,7 +266,7 @@ export default {
     // 加载模版
     loadPage(id) {
       let key = 'init';
-      axios.get(`http://127.0.0.1:8088/api/page/get?id=${id}`, ).then(response => {
+      axios.get(`http://124.222.242.75:8088/api/page/get?id=${id}`, ).then(response => {
         const pageData = JSON.parse(response.data.content);
         this.widgets = pageData.widgets
         this.pageName = response.data.name
@@ -292,7 +292,7 @@ export default {
       const formData = new FormData();
       formData.append('file', this.file);
 
-      axios.post('http://127.0.0.1:8088/api/page/upload', formData, {
+      axios.post('http://124.222.242.75:8088/api/page/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
